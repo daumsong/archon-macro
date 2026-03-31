@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archon Macro - 1:1 문의</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: '맑은 고딕', sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
@@ -159,7 +159,13 @@ const SUPABASE_URL = 'https://ixncygyqmgjoqzcociye.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4bmN5Z3lxbWdqb3F6Y29jaXllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MjE4NDgsImV4cCI6MjA5MDQ5Nzg0OH0.r2RWj62PCjREUOURBqkgj9Iq1CjbK9KS-SSWV4UEkuE';
 const ADMIN_EMAIL = 'daumsong@gmail.com';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let sb;
+try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} catch(e) {
+    document.body.innerHTML = '<div style="color:red;padding:50px;text-align:center;">Supabase 로딩 실패: '+e.message+'</div>';
+}
+const supabase = sb;
 
 let currentUser = null;
 let isLogin = true;
@@ -167,12 +173,16 @@ let currentInquiryId = null;
 
 // 초기화
 async function init() {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-        currentUser = session.user;
-        updateNav();
-        showList();
-    } else {
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            currentUser = session.user;
+            updateNav();
+            showList();
+        } else {
+            showAuth();
+        }
+    } catch(e) {
         showAuth();
     }
 }
