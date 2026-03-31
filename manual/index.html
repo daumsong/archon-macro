@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archon Macro - 사용 설명서</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: '맑은 고딕', sans-serif; background: #0a0a0a; color: #c9d1d9; line-height: 1.8; }
+
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: #161b22; border-bottom: 1px solid #30363d; position: sticky; top: 0; z-index: 100; }
+        .nav a { color: #e0e0e0; text-decoration: none; font-weight: bold; font-size: 18px; }
+        .nav a:hover { color: #2ea043; }
+        .nav-right { display: flex; gap: 20px; }
+
+        .container { max-width: 860px; margin: 0 auto; padding: 40px 20px 80px; }
+
+        h1 { color: #fff; font-size: 32px; text-align: center; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #8b949e; margin-bottom: 40px; font-size: 16px; }
+        h2 { color: #58a6ff; font-size: 24px; margin-top: 50px; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 2px solid #30363d; }
+        h3 { color: #3fb950; font-size: 18px; margin-top: 30px; margin-bottom: 12px; }
+        h4 { color: #d29922; font-size: 16px; margin-top: 20px; margin-bottom: 8px; }
+
+        p { margin-bottom: 12px; font-size: 15px; }
+
+        .img-wrap { text-align: center; margin: 20px 0; }
+        .img-wrap img { max-width: 100%; border: 1px solid #30363d; border-radius: 8px; }
+        .img-caption { color: #8b949e; font-size: 13px; margin-top: 6px; }
+
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th { background: #238636; color: #fff; padding: 10px 14px; text-align: left; font-size: 14px; }
+        td { padding: 10px 14px; border: 1px solid #30363d; font-size: 14px; vertical-align: top; }
+        tr:nth-child(even) { background: #161b22; }
+
+        .tip { background: #2a1f00; border-left: 4px solid #d29922; padding: 12px 16px; margin: 15px 0; border-radius: 4px; font-size: 14px; }
+        .warn { background: #2d1215; border-left: 4px solid #f85149; padding: 12px 16px; margin: 15px 0; border-radius: 4px; font-size: 14px; }
+        .info { background: #0d2137; border-left: 4px solid #58a6ff; padding: 12px 16px; margin: 15px 0; border-radius: 4px; font-size: 14px; }
+
+        .example { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px; margin: 20px 0; }
+        .example h4 { margin-top: 0; }
+
+        .toc { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px 25px; margin: 30px 0; }
+        .toc h3 { color: #fff; margin-top: 0; margin-bottom: 10px; }
+        .toc a { color: #58a6ff; text-decoration: none; font-size: 15px; display: block; padding: 4px 0; }
+        .toc a:hover { color: #79c0ff; }
+
+        .color-box { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: middle; margin-right: 4px; }
+
+        .footer { text-align: center; padding: 30px 20px; border-top: 1px solid #30363d; color: #484f58; font-size: 13px; }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 24px; }
+            h2 { font-size: 20px; }
+            .container { padding: 20px 15px 60px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="/">Archon Macro</a>
+    <div class="nav-right">
+        <a href="/manual/" style="color: #e67e22;">설명서</a>
+        <a href="/faq/">FAQ</a>
+        <a href="/board/">문의</a>
+    </div>
+</nav>
+
+<div class="container">
+
+<h1>Archon Macro 사용 설명서</h1>
+<p class="subtitle">버전 1.0</p>
+
+<div class="img-wrap">
+    <img src="img/statusbar.png" alt="상태바" style="max-width: 700px;">
+</div>
+
+<!-- 목차 -->
+<div class="toc">
+    <h3>목차</h3>
+    <a href="#install">1. 설치 방법</a>
+    <a href="#statusbar">2. 상태바 사용법</a>
+    <a href="#settings">3. 설정 창</a>
+    <a href="#slot">4. 슬롯 설정</a>
+    <a href="#editor">5. 키 순서 편집기</a>
+    <a href="#target">6. 대상 창 설정</a>
+    <a href="#suppress">7. 단축키 입력 차단</a>
+    <a href="#examples">8. 사용 예시</a>
+    <a href="#caution">9. 주의사항</a>
+</div>
+
+<!-- 1. 설치 -->
+<h2 id="install">1. 설치 방법</h2>
+<p>1. USB 장치를 컴퓨터에 연결합니다.</p>
+<p>2. <b>ArchonMacro_Setup.exe</b> 파일을 실행합니다.</p>
+<p>3. 설치 마법사의 안내에 따라 설치를 완료합니다.</p>
+<p>4. 바탕화면의 <b>Archon Macro</b> 아이콘을 실행합니다.</p>
+<p>5. 첫 실행 시 자동으로 장치 설정이 진행됩니다.</p>
+<div class="tip">※ 프로그램은 관리자 권한으로 실행됩니다. 관리자 권한 요청 팝업에서 '예'를 클릭하세요.</div>
+
+<!-- 2. 상태바 -->
+<h2 id="statusbar">2. 상태바 사용법</h2>
+<p>프로그램을 실행하면 화면 상단에 상태바가 표시됩니다.</p>
+<div class="img-wrap">
+    <img src="img/statusbar.png" alt="상태바" style="max-width: 700px;">
+    <div class="img-caption">[그림] 상태바 전체 모습</div>
+</div>
+
+<table>
+    <tr><th>구성 요소</th><th>설명</th></tr>
+    <tr><td>Archon Macro</td><td>프로그램 이름. 이 영역을 드래그하여 상태바 위치를 이동할 수 있습니다.</td></tr>
+    <tr><td><span class="color-box" style="background:#2ecc71;"></span><span class="color-box" style="background:#e74c3c;"></span> 체크박스</td><td>전체 매크로 활성/비활성 토글<br><span class="color-box" style="background:#2ecc71;"></span> 초록 = 활성, <span class="color-box" style="background:#e74c3c;"></span> 빨강 = 비활성</td></tr>
+    <tr><td>매크로 버튼들</td><td>각 슬롯의 이름이 표시됩니다.<br>클릭하면 해당 슬롯을 활성/비활성으로 전환합니다.</td></tr>
+    <tr><td>⚙ (설정)</td><td>설정 창을 엽니다.</td></tr>
+    <tr><td>✖ (종료)</td><td>프로그램을 종료합니다.</td></tr>
+</table>
+
+<h3>슬롯 활성/비활성 토글</h3>
+<p>상태바의 매크로 버튼을 <b>클릭</b>하면 해당 슬롯이 비활성화됩니다.<br>
+비활성화된 슬롯은 '비활성'으로 표시되며, 단축키가 무시됩니다.<br>
+다시 클릭하면 활성화됩니다.</p>
+<div class="tip">※ ESC 키를 3초 이상 누르면 모든 매크로가 비활성화됩니다.</div>
+
+<!-- 3. 설정 창 -->
+<h2 id="settings">3. 설정 창</h2>
+<p>상태바의 ⚙ 버튼을 클릭하면 설정 창이 열립니다.</p>
+<div class="img-wrap">
+    <img src="img/settings.png" alt="설정 창" style="max-width: 400px;">
+    <div class="img-caption">[그림] 설정 창 전체 모습</div>
+</div>
+<p><b>설정 창 구성:</b></p>
+<p>• <b>대상 창</b>: 매크로가 동작할 프로그램 창을 지정합니다.</p>
+<p>• <b>슬롯 목록</b>: 각 매크로의 이름, 단축키, 키 순서, 모드를 설정합니다.</p>
+<p>• <b>+ 추가</b>: 새로운 매크로 슬롯을 추가합니다.</p>
+<p>• <b>? 도움말</b>: 프로그램 내 도움말을 표시합니다.</p>
+<p>• <b>저장</b>: 변경사항을 저장합니다.</p>
+<div class="tip">※ 설정 변경 후 반드시 '저장' 버튼을 눌러야 적용됩니다. 저장하지 않고 창을 닫으면 변경사항이 취소됩니다.</div>
+
+<!-- 4. 슬롯 설정 -->
+<h2 id="slot">4. 슬롯 설정</h2>
+<div class="img-wrap">
+    <img src="img/slot.png" alt="슬롯 설정" style="max-width: 400px;">
+    <div class="img-caption">[그림] 슬롯 설정 예시</div>
+</div>
+<table>
+    <tr><th>항목</th><th>설명</th></tr>
+    <tr><td>이름</td><td>상태바에 표시될 매크로 이름을 입력합니다.</td></tr>
+    <tr><td>단축키</td><td>"입력" 버튼 클릭 후 0.5초 대기 → 원하는 키를 누르면 설정됩니다.<br>키보드: F4, Tab, Shift+2, Ctrl+1 등<br>마우스: Mouse4(뒤로), Mouse5(앞으로) 등</td></tr>
+    <tr><td>키 순서</td><td>"편집" 버튼을 클릭하면 키 순서 편집기가 열립니다.</td></tr>
+    <tr><td>모드</td><td>반복: ON/OFF 토글, 계속 반복<br>홀드: ON이면 키 누르고 유지, OFF면 뗌<br>1회: 한번만 실행 후 자동 OFF</td></tr>
+    <tr><td>단축키 입력 차단</td><td>체크하면 단축키를 눌러도 해당 키가 프로그램에 전달되지 않습니다.</td></tr>
+    <tr><td>삭제</td><td>해당 슬롯을 삭제합니다.</td></tr>
+</table>
+<h3>모드 선택</h3>
+<div class="img-wrap">
+    <img src="img/mode.png" alt="모드 선택" style="max-width: 350px;">
+    <div class="img-caption">[그림] 모드 선택 드롭다운</div>
+</div>
+
+<!-- 5. 키 순서 편집기 -->
+<h2 id="editor">5. 키 순서 편집기</h2>
+
+<h3>활용 예시: 마방 전환</h3>
+<div class="img-wrap">
+    <img src="img/game.png" alt="게임 장비" style="max-width: 300px;">
+    <div class="img-caption">[그림] 게임 내 장비 슬롯 (F3 탭)</div>
+</div>
+<p>위 게임 화면에서 마방 장비를 전환하려면 F3 → F5 → F7 → F6 → F1 순서로 키를 눌러야 합니다. 이 순서를 매크로로 등록하면 단축키 한번으로 자동 실행됩니다.</p>
+
+<p>슬롯 설정에서 '편집' 버튼을 클릭하면 키 순서 편집기가 열립니다.</p>
+<div class="img-wrap">
+    <img src="img/editor.png" alt="편집기" style="max-width: 500px;">
+    <div class="img-caption">[그림] 키 순서 편집기 - 키 순서와 대기 시간</div>
+</div>
+
+<h3>편집기 구성</h3>
+<p>• 각 동작이 번호와 함께 세로로 나열됩니다.</p>
+<p>• 동작과 동작 사이에 <b>대기 시간(초)</b>을 설정할 수 있습니다.</p>
+<p>• <b>▲ ▼</b> 버튼으로 순서를 변경할 수 있습니다.</p>
+<p>• <b>X</b> 버튼으로 동작을 삭제할 수 있습니다.</p>
+<p>• 동작을 <b>클릭</b>하면 해당 동작을 수정할 수 있습니다.</p>
+
+<h3>+ 키/버튼</h3>
+<div class="img-wrap">
+    <img src="img/keymenu.png" alt="키/버튼 메뉴" style="max-width: 500px;">
+    <div class="img-caption">[그림] 키/버튼 추가 메뉴</div>
+</div>
+<p>키보드 키 또는 마우스 버튼을 추가합니다. 세 가지 모드 중 선택:</p>
+<p>• <b>탭</b>: 키를 누르고 바로 뗌 (일반적인 키 입력)</p>
+<p>• <b>누르기 (유지)</b>: 키를 누른 상태 유지 (예: Shift 누른 채 유지)</p>
+<p>• <b>떼기</b>: 누르고 있던 키를 뗌</p>
+<div class="info">
+    <b>Shift를 누른 채로 좌표 클릭하는 조합 예시:</b><br>
+    1. + 키/버튼 → 누르기 → LShift 선택<br>
+    2. + 좌표클릭 → 좌클릭 → 화면 클릭<br>
+    3. + 키/버튼 → 떼기 → LShift 선택
+</div>
+
+<h3>+ 좌표클릭</h3>
+<div class="img-wrap">
+    <img src="img/coordmenu.png" alt="좌표클릭 메뉴" style="max-width: 500px;">
+    <div class="img-caption">[그림] 좌표클릭 메뉴 (좌클릭/우클릭/더블클릭/이동)</div>
+</div>
+<p>• <b>좌클릭</b>: 지정 좌표에서 좌클릭</p>
+<p>• <b>우클릭</b>: 지정 좌표에서 우클릭</p>
+<p>• <b>더블클릭</b>: 지정 좌표에서 더블클릭</p>
+<p>• <b>이동</b>: 마우스를 좌표로 이동 (클릭 없음)</p>
+<div class="tip">※ 반투명 화면에서 Shift/Ctrl/Alt를 누른 채 클릭하면 수식키+클릭 조합이 기록됩니다.</div>
+
+<h3>+ 타이핑</h3>
+<div class="img-wrap">
+    <img src="img/typing.png" alt="타이핑" style="max-width: 500px;">
+    <div class="img-caption">[그림] 타이핑 입력 다이얼로그</div>
+</div>
+<p>• 한글, 영문, 숫자, 특수문자 모두 지원</p>
+<p>• 한글 입력 시 PC의 입력 모드가 한글이어야 합니다.</p>
+<p>• 타이핑 실행 중에는 다른 모든 매크로가 자동 일시정지됩니다.</p>
+
+<h3>+ 드래그</h3>
+<p>1단계: 반투명 화면에서 시작점 클릭</p>
+<p>2단계: 반투명 화면에서 끝점 클릭</p>
+<p>3단계: 드래그 이동 시간(초) 입력</p>
+
+<!-- 6. 대상 창 -->
+<h2 id="target">6. 대상 창 설정</h2>
+<p>특정 프로그램 창에서만 매크로가 동작하도록 설정합니다.</p>
+<h3>설정 방법</h3>
+<p>1. 설정 창 상단의 "창 선택" 버튼을 클릭합니다.</p>
+<p>2. 3초 안에 대상 프로그램 창을 클릭합니다.</p>
+<p>3. 선택된 창의 이름이 표시됩니다.</p>
+<h3>대상 창 설정 시 효과</h3>
+<p>• 마우스 좌표가 <b>창 기준 상대좌표</b>로 저장됩니다.</p>
+<p>• 창이 이동해도 정확한 위치에 클릭됩니다.</p>
+<p>• 해당 창이 활성화일 때만 단축키/매크로가 동작합니다.</p>
+<p>• 다른 창으로 전환하면 매크로가 자동 일시정지됩니다.</p>
+<div class="tip">※ "해제" 버튼을 누르면 모든 창에서 동작합니다.</div>
+
+<!-- 7. 단축키 입력 차단 -->
+<h2 id="suppress">7. 단축키 입력 차단</h2>
+<p>슬롯 설정에서 '단축키 입력 차단' 체크박스를 체크하면, 단축키를 눌러도 해당 키가 프로그램에 전달되지 않습니다.</p>
+<h3>예시</h3>
+<p>• Tab 키를 단축키로 설정하고 '단축키 입력 차단'을 체크</p>
+<p>• Tab을 눌러도 프로그램에서 Tab 기능이 실행되지 않고, 매크로만 실행됩니다.</p>
+<div class="tip">※ 이 기능은 키보드 키에만 적용됩니다. 마우스 버튼에는 적용되지 않습니다.</div>
+
+<!-- 8. 사용 예시 -->
+<h2 id="examples">8. 사용 예시</h2>
+
+<div class="example">
+    <h4>예시 1: 자동토글 (F4 반복)</h4>
+    <p>단축키 Mouse4를 누르면 F4 키가 0.2초 간격으로 반복 입력됩니다.</p>
+    <div class="img-wrap"><img src="img/ex_toggle1.png" style="max-width:400px;"></div>
+    <div class="img-wrap"><img src="img/ex_toggle2.png" style="max-width:400px;"></div>
+</div>
+
+<div class="example">
+    <h4>예시 2: 자동물약 (F5 홀드)</h4>
+    <p>단축키 Mouse5를 누르면 F5 키를 누르고 있는 상태가 됩니다. 다시 누르면 뗍니다.</p>
+    <div class="img-wrap"><img src="img/ex_potion1.png" style="max-width:400px;"></div>
+    <div class="img-wrap"><img src="img/ex_potion2.png" style="max-width:400px;"></div>
+    <div class="img-wrap"><img src="img/ex_potion3.png" style="max-width:250px;"><div class="img-caption">[그림] 게임 내 물약 슬롯 (F1 탭)</div></div>
+</div>
+
+<div class="example">
+    <h4>예시 3: 힘업 (버프 전환)</h4>
+    <p>단축키 Right(→)를 누르면 F2→F10→F12→F12→F9→F1 순서로 키가 입력됩니다. 1회 실행 후 자동 종료.</p>
+    <div class="img-wrap"><img src="img/ex_str1.png" style="max-width:400px;"></div>
+    <div class="img-wrap"><img src="img/ex_str2.png" style="max-width:400px;"></div>
+    <div class="img-wrap"><img src="img/ex_str3.png" style="max-width:250px;"><div class="img-caption">[그림] 게임 내 버프 슬롯 (F2 탭)</div></div>
+</div>
+
+<div class="example">
+    <h4>예시 4: 인첸트웨폰</h4>
+    <p>단축키 Down(↓)을 누르면 F2→F10→F11→F9→F1 순서로 키가 입력됩니다.</p>
+    <div class="img-wrap"><img src="img/ex_ench1.png" style="max-width:400px;"></div>
+    <div class="img-wrap"><img src="img/ex_ench2.png" style="max-width:400px;"></div>
+</div>
+
+<div class="example">
+    <h4>예시 5: 마방 (마법 방어 장비 전환)</h4>
+    <p>단축키 PageDown을 누르면 F3→F5→F7→F6→F1 순서로 키가 입력됩니다.</p>
+    <div class="img-wrap"><img src="img/ex_mdef1.png" style="max-width:400px;"></div>
+    <div class="img-wrap"><img src="img/ex_mdef2.png" style="max-width:400px;"></div>
+    <div class="img-wrap"><img src="img/ex_mdef3.png" style="max-width:250px;"><div class="img-caption">[그림] 게임 내 장비 슬롯 (F3 탭)</div></div>
+</div>
+
+<div class="example">
+    <h4>예시 6: 물방 (물리 방어 장비 전환)</h4>
+    <p>단축키 PageUp을 누르면 F3→F9→F6→F7→F1 순서로 키가 입력됩니다.</p>
+    <div class="img-wrap"><img src="img/ex_pdef1.png" style="max-width:400px;"></div>
+    <div class="img-wrap"><img src="img/ex_pdef2.png" style="max-width:400px;"></div>
+    <div class="img-wrap"><img src="img/ex_pdef3.png" style="max-width:250px;"><div class="img-caption">[그림] 게임 내 장비 슬롯 (F3 탭) - 물방 장비 활성</div></div>
+</div>
+
+<!-- 9. 주의사항 -->
+<h2 id="caution">9. 주의사항</h2>
+<div class="warn">
+    <p>• 설정 변경 후 반드시 <b>'저장'</b> 버튼을 눌러야 적용됩니다.</p>
+    <p>• 저장하지 않고 창을 닫으면 변경사항이 취소됩니다.</p>
+    <p>• 조합 단축키(Shift+2 등)는 키를 뗀 후에 매크로가 실행됩니다.</p>
+    <p>• 대상 창 설정 시 마우스 좌표는 창 기준 상대좌표입니다.</p>
+    <p>• 한글 타이핑 시 PC의 입력 모드가 한글이어야 합니다.</p>
+    <p>• 타이핑 실행 중에는 다른 모든 매크로가 자동 일시정지됩니다.</p>
+    <p>• <b>ESC를 3초 이상</b> 누르면 전체 매크로가 비활성화됩니다.</p>
+    <p>• USB 장치가 연결되어 있어야 프로그램이 정상 동작합니다.</p>
+</div>
+<p style="margin-top: 20px;">문의사항이 있으시면 <a href="/board/" style="color: #58a6ff;">1:1 문의</a>를 이용해 주세요.</p>
+
+</div>
+
+<footer class="footer">
+    <p>&copy; 2026 Archon Macro. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
