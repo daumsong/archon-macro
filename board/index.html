@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archon Macro - 1:1 문의</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -72,9 +72,9 @@
 <body>
 
 <nav class="nav">
-    <a href="index.html">Archon Macro</a>
+    <a href="/">Archon Macro</a>
     <div class="nav-right" id="navRight">
-        <a href="board.html">1:1 문의</a>
+        <a href="/board/">1:1 문의</a>
     </div>
 </nav>
 
@@ -192,7 +192,7 @@ function updateNav() {
     const nav = document.getElementById('navRight');
     if (currentUser) {
         nav.innerHTML = `
-            <a href="board.html">1:1 문의</a>
+            <a href="/board/">1:1 문의</a>
             <span>${maskEmail(currentUser.email)}</span>
             <button class="btn btn-red" onclick="logout()">로그아웃</button>
         `;
