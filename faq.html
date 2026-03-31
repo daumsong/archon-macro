@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archon Macro - 자주 묻는 질문</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: '맑은 고딕', sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
+
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: #161b22; border-bottom: 1px solid #30363d; }
+        .nav a { color: #e0e0e0; text-decoration: none; font-weight: bold; font-size: 18px; }
+        .nav a:hover { color: #2ea043; }
+        .nav-right { display: flex; gap: 20px; align-items: center; }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        h1 { color: #fff; font-size: 28px; margin-bottom: 30px; text-align: center; }
+
+        .faq-item { background: #161b22; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 10px; overflow: hidden; transition: all 0.3s; }
+        .faq-item:hover { border-color: #1f6feb; }
+        .faq-q { padding: 18px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: bold; color: #fff; }
+        .faq-q:hover { background: #1c2129; }
+        .faq-arrow { font-size: 14px; color: #8b949e; transition: transform 0.3s; }
+        .faq-a { padding: 0 20px; max-height: 0; overflow: hidden; transition: all 0.3s ease; }
+        .faq-a-inner { padding: 0 0 18px 0; color: #8b949e; font-size: 15px; line-height: 1.7; }
+        .faq-item.open .faq-a { max-height: 500px; }
+        .faq-item.open .faq-arrow { transform: rotate(180deg); }
+        .faq-item.open { border-color: #238636; }
+
+        .category { color: #2ea043; font-size: 20px; font-weight: bold; margin: 30px 0 15px; padding-left: 5px; border-left: 4px solid #238636; padding-left: 12px; }
+
+        .footer { text-align: center; padding: 30px 20px; border-top: 1px solid #30363d; color: #484f58; font-size: 13px; margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html">Archon Macro</a>
+    <div class="nav-right">
+        <a href="faq.html" style="color: #2ea043;">FAQ</a>
+        <a href="board.html">문의하기</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>자주 묻는 질문 (FAQ)</h1>
+
+    <div class="category">설치 관련</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">USB 장치를 연결했는데 인식이 안 됩니다. <span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+            다른 USB 포트에 연결해 보세요. USB 허브가 아닌 PC 본체에 직접 연결하는 것을 권장합니다.<br>
+            그래도 안 되면 PC를 재부팅한 후 다시 연결해 주세요.
+        </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">설치 후 실행하면 "장치를 찾을 수 없습니다" 오류가 뜹니다. <span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+            USB 장치가 연결되어 있는지 확인하세요. 프로그램 실행 전에 USB 장치를 먼저 연결해야 합니다.<br>
+            이미 연결되어 있다면 USB를 뽑았다가 다시 연결한 후 프로그램을 재실행하세요.
+        </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">"기존 사용 포트가 있습니다" 오류가 뜹니다. <span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+            프로그램이 이미 실행 중이거나 이전에 정상 종료되지 않은 경우 발생합니다.<br>
+            작업 관리자에서 Archon Macro를 종료한 후 다시 실행하세요.
+        </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">관리자 권한 요청 팝업이 뜨는데 괜찮은 건가요? <span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+            네, 정상입니다. Archon Macro는 키보드/마우스 입력을 제어하기 위해 관리자 권한이 필요합니다.<br>
+            '예'를 클릭하여 실행해 주세요.
+        </div></div>
+    </div>
+
+    <div class="category">사용 관련</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">단축키를 눌러도 매크로가 동작하지 않습니다. <span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+            다음 사항을 확인해 주세요:<br>
+            1. 상태바의 체크박스가 초록색(활성)인지 확인<br>
+            2. 해당 슬롯이 '비활성' 상태가 아닌지 확인 (클릭하여 활성화)<br>
+            3. 대상 창이 설정되어 있다면 해당 창이 활성화되어 있는지 확인<br>
+            4. ESC를 3초 이상 눌러 전체 비활성화된 상태가 아닌지 확인
+        </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">게임에서 키 입력이 안 됩니다. <span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+            게임이 관리자 권한으로 실행 중일 수 있습니다. Archon Macro도 관리자 권한으로 실행되어야 합니다.<br>
+            프로그램을 종료하고 우클릭 → '관리자 권한으로 실행'을 선택하세요.
+        </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">마우스 클릭 좌표가 정확하지 않습니다. <span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+            대상 창을 설정하면 창 기준 상대좌표로 저장됩니다. 창이 이동하더라도 정확한 위치에 클릭됩니다.<br>
+            대상 창이 설정되지 않은 경우 화면 절대좌표로 동작하므로, 모니터 해상도가 변경되면 재설정이 필요합니다.
+        </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">한글 타이핑이 깨져서 나옵니다. <span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+            PC의 입력 모드가 한글로 설정되어 있는지 확인하세요.<br>
+            한글 타이핑은 두벌식 자모 분해 방식으로 입력되므로, 반드시 한글 입력 모드여야 합니다.
+        </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">슬롯을 일시적으로 끄고 싶습니다. <span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+            상태바에서 해당 매크로 버튼을 클릭하면 비활성화됩니다. 다시 클릭하면 활성화됩니다.<br>
+            전체를 끄려면 체크박스를 클릭하거나 ESC를 3초 이상 누르세요.
+        </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">'단축키 입력 차단' 기능은 무엇인가요? <span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+            단축키로 설정한 키가 게임이나 프로그램에 전달되지 않도록 차단하는 기능입니다.<br>
+            예를 들어 Tab을 단축키로 사용하면, Tab을 눌러도 게임에서 아이템창이 열리지 않고 매크로만 실행됩니다.
+        </div></div>
+    </div>
+
+    <div class="category">설정 관련</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">설정을 다른 PC에 옮기고 싶습니다. <span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+            설치 폴더의 <b>macro_config.json</b> 파일을 복사하면 됩니다.<br>
+            기본 경로: C:\Program Files (x86)\Archon Macro\macro_config.json
+        </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">대상 창은 어떻게 설정하나요? <span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+            설정 창 상단의 '창 선택' 버튼을 클릭한 후 3초 안에 대상 프로그램 창을 클릭하세요.<br>
+            최대 2개 창까지 설정할 수 있습니다.
+        </div></div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">설정을 변경했는데 적용이 안 됩니다. <span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+            설정 변경 후 반드시 <b>'저장'</b> 버튼을 눌러야 적용됩니다.<br>
+            저장하지 않고 창을 닫으면 변경사항이 취소됩니다.
+        </div></div>
+    </div>
+</div>
+
+<footer class="footer">
+    <p>&copy; 2026 Archon Macro. All rights reserved.</p>
+</footer>
+
+<script>
+function toggleFaq(el) {
+    el.classList.toggle('open');
+}
+</script>
+
+</body>
+</html>
