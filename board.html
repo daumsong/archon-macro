@@ -193,7 +193,7 @@ function updateNav() {
     if (currentUser) {
         nav.innerHTML = `
             <a href="board.html">1:1 문의</a>
-            <span>${currentUser.email}</span>
+            <span>${maskEmail(currentUser.email)}</span>
             <button class="btn btn-red" onclick="logout()">로그아웃</button>
         `;
     }
@@ -290,7 +290,7 @@ async function loadInquiries() {
                 <span class="inquiry-status ${item.status === '답변완료' ? 'status-replied' : 'status-waiting'}">${item.status}</span>
             </div>
             <div class="inquiry-meta">
-                ${currentUser.email === ADMIN_EMAIL ? item.user_email + ' | ' : ''}
+                ${currentUser.email === ADMIN_EMAIL ? maskEmail(item.user_email) + ' | ' : ''}
                 ${new Date(item.created_at).toLocaleDateString('ko-KR')}
             </div>
         </div>
@@ -307,7 +307,7 @@ async function showDetail(id) {
     if (error || !data) return;
 
     document.getElementById('detailMeta').textContent =
-        `${data.user_email} | ${new Date(data.created_at).toLocaleDateString('ko-KR')} | ${data.status}`;
+        `${maskEmail(data.user_email)} | ${new Date(data.created_at).toLocaleDateString('ko-KR')} | ${data.status}`;
     document.getElementById('detailTitle').textContent = data.title;
     document.getElementById('detailContent').textContent = data.content;
 
@@ -383,6 +383,12 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+function maskEmail(email) {
+    const [name, domain] = email.split('@');
+    const masked = name.slice(0, 3) + '*'.repeat(Math.max(name.length - 3, 2));
+    return masked + '@' + domain;
 }
 
 // Enter 키로 로그인
