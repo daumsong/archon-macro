@@ -269,13 +269,8 @@ async function loadInquiries() {
     const listEl = document.getElementById('inquiryList');
     let query;
 
-    if (currentUser.email === ADMIN_EMAIL) {
-        // 관리자: 전체 문의
-        query = supabase.from('inquiries').select('*').order('created_at', { ascending: false });
-    } else {
-        // 일반 사용자: 본인 문의만
-        query = supabase.from('inquiries').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-    }
+    // 모든 사용자: 전체 문의 목록 표시
+    query = supabase.from('inquiries').select('*').order('created_at', { ascending: false });
 
     const { data, error } = await query;
     if (error || !data || data.length === 0) {
@@ -290,8 +285,7 @@ async function loadInquiries() {
                 <span class="inquiry-status ${item.status === '답변완료' ? 'status-replied' : 'status-waiting'}">${item.status}</span>
             </div>
             <div class="inquiry-meta">
-                ${currentUser.email === ADMIN_EMAIL ? maskEmail(item.user_email) + ' | ' : ''}
-                ${new Date(item.created_at).toLocaleDateString('ko-KR')}
+                ${currentUser.email === ADMIN_EMAIL ? item.user_email : maskEmail(item.user_email)} | ${new Date(item.created_at).toLocaleDateString('ko-KR')}
             </div>
         </div>
     `).join('');
@@ -306,8 +300,15 @@ async function showDetail(id) {
     const { data, error } = await supabase.from('inquiries').select('*').eq('id', id).single();
     if (error || !data) return;
 
+    // 본인 문의 또는 관리자만 상세 보기 가능
+    if (data.user_id !== currentUser.id && currentUser.email !== ADMIN_EMAIL) {
+        alert('본인의 문의만 확인할 수 있습니다.');
+        showList();
+        return;
+    }
+
     document.getElementById('detailMeta').textContent =
-        `${maskEmail(data.user_email)} | ${new Date(data.created_at).toLocaleDateString('ko-KR')} | ${data.status}`;
+        `${currentUser.email === ADMIN_EMAIL ? data.user_email : maskEmail(data.user_email)} | ${new Date(data.created_at).toLocaleDateString('ko-KR')} | ${data.status}`;
     document.getElementById('detailTitle').textContent = data.title;
     document.getElementById('detailContent').textContent = data.content;
 
