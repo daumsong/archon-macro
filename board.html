@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archon Macro - 1:1 문의</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: '맑은 고딕', sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
+
+        /* Nav */
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: #161b22; border-bottom: 1px solid #30363d; }
+        .nav a { color: #e0e0e0; text-decoration: none; font-weight: bold; font-size: 18px; }
+        .nav a:hover { color: #2ea043; }
+        .nav-right { display: flex; gap: 15px; align-items: center; }
+        .nav-right span { color: #8b949e; font-size: 14px; }
+        .btn { padding: 8px 18px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; transition: all 0.3s; }
+        .btn-green { background: #238636; color: #fff; }
+        .btn-green:hover { background: #2ea043; }
+        .btn-red { background: #da3633; color: #fff; }
+        .btn-red:hover { background: #f85149; }
+        .btn-blue { background: #1f6feb; color: #fff; }
+        .btn-blue:hover { background: #388bfd; }
+        .btn-gray { background: #30363d; color: #e0e0e0; }
+        .btn-gray:hover { background: #484f58; }
+
+        /* Container */
+        .container { max-width: 800px; margin: 0 auto; padding: 30px 20px; }
+
+        /* Auth Form */
+        .auth-box { max-width: 400px; margin: 60px auto; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 40px; }
+        .auth-box h2 { text-align: center; margin-bottom: 25px; color: #fff; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: #8b949e; font-size: 14px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #e0e0e0; font-size: 14px; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #1f6feb; }
+        .form-group textarea { height: 150px; resize: vertical; }
+        .auth-toggle { text-align: center; margin-top: 15px; color: #8b949e; font-size: 14px; }
+        .auth-toggle a { color: #1f6feb; cursor: pointer; text-decoration: none; }
+        .msg { padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; display: none; }
+        .msg-error { background: #3d1214; border: 1px solid #da3633; color: #f85149; }
+        .msg-success { background: #12261e; border: 1px solid #238636; color: #2ea043; }
+
+        /* Board */
+        .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .board-header h2 { color: #fff; font-size: 24px; }
+        .inquiry-list { display: flex; flex-direction: column; gap: 10px; }
+        .inquiry-item { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px 20px; cursor: pointer; transition: all 0.3s; }
+        .inquiry-item:hover { border-color: #1f6feb; }
+        .inquiry-title { font-size: 16px; color: #fff; margin-bottom: 5px; }
+        .inquiry-meta { font-size: 13px; color: #8b949e; }
+        .inquiry-status { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: bold; }
+        .status-waiting { background: #3d2e00; color: #d29922; }
+        .status-replied { background: #12261e; color: #2ea043; }
+        .empty { text-align: center; color: #484f58; padding: 40px; font-size: 16px; }
+
+        /* Detail */
+        .detail-box { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 25px; margin-bottom: 20px; }
+        .detail-title { font-size: 20px; color: #fff; margin-bottom: 10px; }
+        .detail-content { color: #c9d1d9; line-height: 1.7; white-space: pre-wrap; margin: 15px 0; padding: 15px; background: #0d1117; border-radius: 6px; }
+        .reply-box { background: #12261e; border: 1px solid #238636; border-radius: 8px; padding: 15px; margin-top: 15px; }
+        .reply-box h4 { color: #2ea043; margin-bottom: 8px; }
+        .reply-box p { color: #c9d1d9; line-height: 1.6; white-space: pre-wrap; }
+        .back-link { color: #1f6feb; cursor: pointer; font-size: 14px; margin-bottom: 15px; display: inline-block; }
+
+        /* Admin */
+        .admin-reply { margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html">Archon Macro</a>
+    <div class="nav-right" id="navRight">
+        <a href="board.html">1:1 문의</a>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- 로그인/회원가입 -->
+    <div id="authSection" style="display:none;">
+        <div class="auth-box">
+            <h2 id="authTitle">로그인</h2>
+            <div class="msg msg-error" id="authError"></div>
+            <div class="msg msg-success" id="authSuccess"></div>
+            <div class="form-group">
+                <label>이메일</label>
+                <input type="email" id="authEmail" placeholder="이메일 입력">
+            </div>
+            <div class="form-group">
+                <label>비밀번호</label>
+                <input type="password" id="authPassword" placeholder="비밀번호 입력 (6자 이상)">
+            </div>
+            <button class="btn btn-green" style="width:100%; padding:12px;" id="authBtn" onclick="handleAuth()">로그인</button>
+            <div class="auth-toggle">
+                <span id="authToggleText">계정이 없으신가요?</span>
+                <a id="authToggleLink" onclick="toggleAuth()">회원가입</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 문의 목록 -->
+    <div id="listSection" style="display:none;">
+        <div class="board-header">
+            <h2>1:1 문의</h2>
+            <button class="btn btn-green" onclick="showWrite()">문의하기</button>
+        </div>
+        <div class="inquiry-list" id="inquiryList"></div>
+    </div>
+
+    <!-- 문의 작성 -->
+    <div id="writeSection" style="display:none;">
+        <div class="board-header">
+            <h2>문의 작성</h2>
+        </div>
+        <div class="detail-box">
+            <div class="msg msg-error" id="writeError"></div>
+            <div class="form-group">
+                <label>제목</label>
+                <input type="text" id="writeTitle" placeholder="문의 제목을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label>내용</label>
+                <textarea id="writeContent" placeholder="문의 내용을 상세히 작성해 주세요"></textarea>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button class="btn btn-gray" onclick="showList()">취소</button>
+                <button class="btn btn-green" onclick="submitInquiry()">등록</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 문의 상세 -->
+    <div id="detailSection" style="display:none;">
+        <a class="back-link" onclick="showList()">← 목록으로</a>
+        <div class="detail-box">
+            <div class="inquiry-meta" id="detailMeta"></div>
+            <div class="detail-title" id="detailTitle"></div>
+            <div class="detail-content" id="detailContent"></div>
+            <div id="detailReply"></div>
+        </div>
+        <!-- 관리자 답변 -->
+        <div id="adminSection" style="display:none;">
+            <div class="detail-box admin-reply">
+                <div class="form-group">
+                    <label>관리자 답변</label>
+                    <textarea id="adminReply" placeholder="답변을 입력하세요"></textarea>
+                </div>
+                <button class="btn btn-blue" onclick="submitReply()">답변 등록</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://ixncygyqmgjoqzcociye.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_IjOtsYZZqtQctOR0fNA3BQ_C2RJFsWP';
+const ADMIN_EMAIL = 'daumsong@gmail.com';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;
+let isLogin = true;
+let currentInquiryId = null;
+
+// 초기화
+async function init() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+        currentUser = session.user;
+        updateNav();
+        showList();
+    } else {
+        showAuth();
+    }
+}
+
+function updateNav() {
+    const nav = document.getElementById('navRight');
+    if (currentUser) {
+        nav.innerHTML = `
+            <a href="board.html">1:1 문의</a>
+            <span>${currentUser.email}</span>
+            <button class="btn btn-red" onclick="logout()">로그아웃</button>
+        `;
+    }
+}
+
+// 섹션 전환
+function hideAll() {
+    ['authSection','listSection','writeSection','detailSection'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+    });
+}
+function showAuth() { hideAll(); document.getElementById('authSection').style.display = 'block'; }
+function showList() { hideAll(); document.getElementById('listSection').style.display = 'block'; loadInquiries(); }
+function showWrite() { hideAll(); document.getElementById('writeSection').style.display = 'block'; }
+
+// 로그인/회원가입 토글
+function toggleAuth() {
+    isLogin = !isLogin;
+    document.getElementById('authTitle').textContent = isLogin ? '로그인' : '회원가입';
+    document.getElementById('authBtn').textContent = isLogin ? '로그인' : '회원가입';
+    document.getElementById('authToggleText').textContent = isLogin ? '계정이 없으신가요?' : '이미 계정이 있으신가요?';
+    document.getElementById('authToggleLink').textContent = isLogin ? '회원가입' : '로그인';
+    document.getElementById('authError').style.display = 'none';
+    document.getElementById('authSuccess').style.display = 'none';
+}
+
+// 인증 처리
+async function handleAuth() {
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    const errorEl = document.getElementById('authError');
+    const successEl = document.getElementById('authSuccess');
+    errorEl.style.display = 'none';
+    successEl.style.display = 'none';
+
+    if (!email || !password) {
+        errorEl.textContent = '이메일과 비밀번호를 입력해 주세요.';
+        errorEl.style.display = 'block';
+        return;
+    }
+
+    if (isLogin) {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+            errorEl.textContent = '로그인 실패: 이메일 또는 비밀번호를 확인하세요.';
+            errorEl.style.display = 'block';
+        } else {
+            currentUser = data.user;
+            updateNav();
+            showList();
+        }
+    } else {
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) {
+            errorEl.textContent = '회원가입 실패: ' + error.message;
+            errorEl.style.display = 'block';
+        } else {
+            successEl.textContent = '회원가입 완료! 이메일 인증 후 로그인해 주세요.';
+            successEl.style.display = 'block';
+        }
+    }
+}
+
+// 로그아웃
+async function logout() {
+    await supabase.auth.signOut();
+    currentUser = null;
+    location.reload();
+}
+
+// 문의 목록 로드
+async function loadInquiries() {
+    const listEl = document.getElementById('inquiryList');
+    let query;
+
+    if (currentUser.email === ADMIN_EMAIL) {
+        // 관리자: 전체 문의
+        query = supabase.from('inquiries').select('*').order('created_at', { ascending: false });
+    } else {
+        // 일반 사용자: 본인 문의만
+        query = supabase.from('inquiries').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+    }
+
+    const { data, error } = await query;
+    if (error || !data || data.length === 0) {
+        listEl.innerHTML = '<div class="empty">문의 내역이 없습니다.</div>';
+        return;
+    }
+
+    listEl.innerHTML = data.map(item => `
+        <div class="inquiry-item" onclick="showDetail(${item.id})">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="inquiry-title">${escapeHtml(item.title)}</div>
+                <span class="inquiry-status ${item.status === '답변완료' ? 'status-replied' : 'status-waiting'}">${item.status}</span>
+            </div>
+            <div class="inquiry-meta">
+                ${currentUser.email === ADMIN_EMAIL ? item.user_email + ' | ' : ''}
+                ${new Date(item.created_at).toLocaleDateString('ko-KR')}
+            </div>
+        </div>
+    `).join('');
+}
+
+// 문의 상세
+async function showDetail(id) {
+    hideAll();
+    document.getElementById('detailSection').style.display = 'block';
+    currentInquiryId = id;
+
+    const { data, error } = await supabase.from('inquiries').select('*').eq('id', id).single();
+    if (error || !data) return;
+
+    document.getElementById('detailMeta').textContent =
+        `${data.user_email} | ${new Date(data.created_at).toLocaleDateString('ko-KR')} | ${data.status}`;
+    document.getElementById('detailTitle').textContent = data.title;
+    document.getElementById('detailContent').textContent = data.content;
+
+    const replyEl = document.getElementById('detailReply');
+    if (data.reply) {
+        replyEl.innerHTML = `
+            <div class="reply-box">
+                <h4>관리자 답변</h4>
+                <p>${escapeHtml(data.reply)}</p>
+                <div style="font-size:12px; color:#8b949e; margin-top:8px;">${data.replied_at ? new Date(data.replied_at).toLocaleDateString('ko-KR') : ''}</div>
+            </div>
+        `;
+    } else {
+        replyEl.innerHTML = '';
+    }
+
+    // 관리자만 답변 폼 표시
+    const adminEl = document.getElementById('adminSection');
+    if (currentUser.email === ADMIN_EMAIL) {
+        adminEl.style.display = 'block';
+        document.getElementById('adminReply').value = data.reply || '';
+    } else {
+        adminEl.style.display = 'none';
+    }
+}
+
+// 문의 등록
+async function submitInquiry() {
+    const title = document.getElementById('writeTitle').value.trim();
+    const content = document.getElementById('writeContent').value.trim();
+    const errorEl = document.getElementById('writeError');
+
+    if (!title || !content) {
+        errorEl.textContent = '제목과 내용을 입력해 주세요.';
+        errorEl.style.display = 'block';
+        return;
+    }
+
+    const { error } = await supabase.from('inquiries').insert({
+        user_id: currentUser.id,
+        user_email: currentUser.email,
+        title: title,
+        content: content
+    });
+
+    if (error) {
+        errorEl.textContent = '등록 실패: ' + error.message;
+        errorEl.style.display = 'block';
+    } else {
+        document.getElementById('writeTitle').value = '';
+        document.getElementById('writeContent').value = '';
+        showList();
+    }
+}
+
+// 관리자 답변 등록
+async function submitReply() {
+    const reply = document.getElementById('adminReply').value.trim();
+    if (!reply) return;
+
+    const { error } = await supabase.from('inquiries').update({
+        reply: reply,
+        status: '답변완료',
+        replied_at: new Date().toISOString()
+    }).eq('id', currentInquiryId);
+
+    if (!error) {
+        showDetail(currentInquiryId);
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Enter 키로 로그인
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && document.getElementById('authSection').style.display !== 'none') {
+        handleAuth();
+    }
+});
+
+init();
+</script>
+
+</body>
+</html>
