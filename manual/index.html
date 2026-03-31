@@ -25,7 +25,7 @@
         p { margin-bottom: 12px; font-size: 15px; }
 
         .img-wrap { text-align: center; margin: 20px 0; }
-        .img-wrap img { max-width: 100%; border: 1px solid #30363d; border-radius: 8px; }
+        .img-wrap img { max-width: 100%; width: 100%; border: 1px solid #30363d; border-radius: 8px; }
         .img-caption { color: #8b949e; font-size: 13px; margin-top: 6px; }
 
         table { width: 100%; border-collapse: collapse; margin: 15px 0; }
@@ -73,7 +73,7 @@
 <p class="subtitle">버전 1.0</p>
 
 <div class="img-wrap">
-    <img src="img/statusbar.png" alt="상태바" style="max-width: 700px;">
+    <img src="img/statusbar.png" alt="상태바">
 </div>
 
 <!-- 목차 -->
@@ -103,7 +103,7 @@
 <h2 id="statusbar">2. 상태바 사용법</h2>
 <p>프로그램을 실행하면 화면 상단에 상태바가 표시됩니다.</p>
 <div class="img-wrap">
-    <img src="img/statusbar.png" alt="상태바" style="max-width: 700px;">
+    <img src="img/statusbar.png" alt="상태바">
     <div class="img-caption">[그림] 상태바 전체 모습</div>
 </div>
 
@@ -126,7 +126,7 @@
 <h2 id="settings">3. 설정 창</h2>
 <p>상태바의 ⚙ 버튼을 클릭하면 설정 창이 열립니다.</p>
 <div class="img-wrap">
-    <img src="img/settings.png" alt="설정 창" style="max-width: 400px;">
+    <img src="img/settings.png" alt="설정 창">
     <div class="img-caption">[그림] 설정 창 전체 모습</div>
 </div>
 <p><b>설정 창 구성:</b></p>
@@ -140,7 +140,7 @@
 <!-- 4. 슬롯 설정 -->
 <h2 id="slot">4. 슬롯 설정</h2>
 <div class="img-wrap">
-    <img src="img/slot.png" alt="슬롯 설정" style="max-width: 400px;">
+    <img src="img/slot.png" alt="슬롯 설정">
     <div class="img-caption">[그림] 슬롯 설정 예시</div>
 </div>
 <table>
@@ -154,7 +154,7 @@
 </table>
 <h3>모드 선택</h3>
 <div class="img-wrap">
-    <img src="img/mode.png" alt="모드 선택" style="max-width: 350px;">
+    <img src="img/mode.png" alt="모드 선택">
     <div class="img-caption">[그림] 모드 선택 드롭다운</div>
 </div>
 
@@ -163,14 +163,14 @@
 
 <h3>활용 예시: 마방 전환</h3>
 <div class="img-wrap">
-    <img src="img/game.png" alt="게임 장비" style="max-width: 300px;">
+    <img src="img/game.png" alt="게임 장비">
     <div class="img-caption">[그림] 게임 내 장비 슬롯 (F3 탭)</div>
 </div>
 <p>위 게임 화면에서 마방 장비를 전환하려면 F3 → F5 → F7 → F6 → F1 순서로 키를 눌러야 합니다. 이 순서를 매크로로 등록하면 단축키 한번으로 자동 실행됩니다.</p>
 
 <p>슬롯 설정에서 '편집' 버튼을 클릭하면 키 순서 편집기가 열립니다.</p>
 <div class="img-wrap">
-    <img src="img/editor.png" alt="편집기" style="max-width: 500px;">
+    <img src="img/editor.png" alt="편집기">
     <div class="img-caption">[그림] 키 순서 편집기 - 키 순서와 대기 시간</div>
 </div>
 
@@ -183,7 +183,7 @@
 
 <h3>+ 키/버튼</h3>
 <div class="img-wrap">
-    <img src="img/keymenu.png" alt="키/버튼 메뉴" style="max-width: 500px;">
+    <img src="img/keymenu.png" alt="키/버튼 메뉴">
     <div class="img-caption">[그림] 키/버튼 추가 메뉴</div>
 </div>
 <p>키보드 키 또는 마우스 버튼을 추가합니다. 세 가지 모드 중 선택:</p>
@@ -199,7 +199,7 @@
 
 <h3>+ 좌표클릭</h3>
 <div class="img-wrap">
-    <img src="img/coordmenu.png" alt="좌표클릭 메뉴" style="max-width: 500px;">
+    <img src="img/coordmenu.png" alt="좌표클릭 메뉴">
     <div class="img-caption">[그림] 좌표클릭 메뉴 (좌클릭/우클릭/더블클릭/이동)</div>
 </div>
 <p>• <b>좌클릭</b>: 지정 좌표에서 좌클릭</p>
@@ -210,7 +210,7 @@
 
 <h3>+ 타이핑</h3>
 <div class="img-wrap">
-    <img src="img/typing.png" alt="타이핑" style="max-width: 500px;">
+    <img src="img/typing.png" alt="타이핑">
     <div class="img-caption">[그림] 타이핑 입력 다이얼로그</div>
 </div>
 <p>• 한글, 영문, 숫자, 특수문자 모두 지원</p>
@@ -250,47 +250,47 @@
 <div class="example">
     <h4>예시 1: 자동토글 (F4 반복)</h4>
     <p>단축키 Mouse4를 누르면 F4 키가 0.2초 간격으로 반복 입력됩니다.</p>
-    <div class="img-wrap"><img src="img/ex_toggle1.png" style="max-width:400px;"></div>
-    <div class="img-wrap"><img src="img/ex_toggle2.png" style="max-width:400px;"></div>
+    <div class="img-wrap"><img src="img/ex_toggle1.png"></div>
+    <div class="img-wrap"><img src="img/ex_toggle2.png"></div>
 </div>
 
 <div class="example">
     <h4>예시 2: 자동물약 (F5 홀드)</h4>
     <p>단축키 Mouse5를 누르면 F5 키를 누르고 있는 상태가 됩니다. 다시 누르면 뗍니다.</p>
-    <div class="img-wrap"><img src="img/ex_potion1.png" style="max-width:400px;"></div>
-    <div class="img-wrap"><img src="img/ex_potion2.png" style="max-width:400px;"></div>
-    <div class="img-wrap"><img src="img/ex_potion3.png" style="max-width:250px;"><div class="img-caption">[그림] 게임 내 물약 슬롯 (F1 탭)</div></div>
+    <div class="img-wrap"><img src="img/ex_potion1.png"></div>
+    <div class="img-wrap"><img src="img/ex_potion2.png"></div>
+    <div class="img-wrap"><img src="img/ex_potion3.png"><div class="img-caption">[그림] 게임 내 물약 슬롯 (F1 탭)</div></div>
 </div>
 
 <div class="example">
     <h4>예시 3: 힘업 (버프 전환)</h4>
     <p>단축키 Right(→)를 누르면 F2→F10→F12→F12→F9→F1 순서로 키가 입력됩니다. 1회 실행 후 자동 종료.</p>
-    <div class="img-wrap"><img src="img/ex_str1.png" style="max-width:400px;"></div>
-    <div class="img-wrap"><img src="img/ex_str2.png" style="max-width:400px;"></div>
-    <div class="img-wrap"><img src="img/ex_str3.png" style="max-width:250px;"><div class="img-caption">[그림] 게임 내 버프 슬롯 (F2 탭)</div></div>
+    <div class="img-wrap"><img src="img/ex_str1.png"></div>
+    <div class="img-wrap"><img src="img/ex_str2.png"></div>
+    <div class="img-wrap"><img src="img/ex_str3.png"><div class="img-caption">[그림] 게임 내 버프 슬롯 (F2 탭)</div></div>
 </div>
 
 <div class="example">
     <h4>예시 4: 인첸트웨폰</h4>
     <p>단축키 Down(↓)을 누르면 F2→F10→F11→F9→F1 순서로 키가 입력됩니다.</p>
-    <div class="img-wrap"><img src="img/ex_ench1.png" style="max-width:400px;"></div>
-    <div class="img-wrap"><img src="img/ex_ench2.png" style="max-width:400px;"></div>
+    <div class="img-wrap"><img src="img/ex_ench1.png"></div>
+    <div class="img-wrap"><img src="img/ex_ench2.png"></div>
 </div>
 
 <div class="example">
     <h4>예시 5: 마방 (마법 방어 장비 전환)</h4>
     <p>단축키 PageDown을 누르면 F3→F5→F7→F6→F1 순서로 키가 입력됩니다.</p>
-    <div class="img-wrap"><img src="img/ex_mdef1.png" style="max-width:400px;"></div>
-    <div class="img-wrap"><img src="img/ex_mdef2.png" style="max-width:400px;"></div>
-    <div class="img-wrap"><img src="img/ex_mdef3.png" style="max-width:250px;"><div class="img-caption">[그림] 게임 내 장비 슬롯 (F3 탭)</div></div>
+    <div class="img-wrap"><img src="img/ex_mdef1.png"></div>
+    <div class="img-wrap"><img src="img/ex_mdef2.png"></div>
+    <div class="img-wrap"><img src="img/ex_mdef3.png"><div class="img-caption">[그림] 게임 내 장비 슬롯 (F3 탭)</div></div>
 </div>
 
 <div class="example">
     <h4>예시 6: 물방 (물리 방어 장비 전환)</h4>
     <p>단축키 PageUp을 누르면 F3→F9→F6→F7→F1 순서로 키가 입력됩니다.</p>
-    <div class="img-wrap"><img src="img/ex_pdef1.png" style="max-width:400px;"></div>
-    <div class="img-wrap"><img src="img/ex_pdef2.png" style="max-width:400px;"></div>
-    <div class="img-wrap"><img src="img/ex_pdef3.png" style="max-width:250px;"><div class="img-caption">[그림] 게임 내 장비 슬롯 (F3 탭) - 물방 장비 활성</div></div>
+    <div class="img-wrap"><img src="img/ex_pdef1.png"></div>
+    <div class="img-wrap"><img src="img/ex_pdef2.png"></div>
+    <div class="img-wrap"><img src="img/ex_pdef3.png"><div class="img-caption">[그림] 게임 내 장비 슬롯 (F3 탭) - 물방 장비 활성</div></div>
 </div>
 
 <!-- 9. 주의사항 -->
