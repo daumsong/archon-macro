@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archon Macro - 1:1 문의</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: '맑은 고딕', sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
@@ -161,9 +161,10 @@ const ADMIN_EMAIL = 'daumsong@gmail.com';
 
 let sb;
 try {
-    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const _s = window.supabase || window.Supabase;
+    sb = _s.createClient(SUPABASE_URL, SUPABASE_KEY);
 } catch(e) {
-    document.body.innerHTML = '<div style="color:red;padding:50px;text-align:center;">Supabase 로딩 실패: '+e.message+'</div>';
+    document.body.innerHTML = '<div style="color:red;padding:50px;text-align:center;">Supabase 로딩 실패: '+e.message+'<br><br>window.supabase = '+(typeof window.supabase)+'</div>';
 }
 const supabase = sb;
 
