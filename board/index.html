@@ -9,13 +9,9 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-    <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: '맑은 고딕', sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
-
-        /* Nav */
         .nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: #161b22; border-bottom: 1px solid #30363d; }
         .nav a { color: #e0e0e0; text-decoration: none; font-weight: bold; font-size: 18px; }
         .nav a:hover { color: #2ea043; }
@@ -30,11 +26,7 @@
         .btn-blue:hover { background: #388bfd; }
         .btn-gray { background: #30363d; color: #e0e0e0; }
         .btn-gray:hover { background: #484f58; }
-
-        /* Container */
         .container { max-width: 800px; margin: 0 auto; padding: 30px 20px; }
-
-        /* Auth Form */
         .auth-box { max-width: 400px; margin: 60px auto; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 40px; }
         .auth-box h2 { text-align: center; margin-bottom: 25px; color: #fff; }
         .form-group { margin-bottom: 15px; }
@@ -42,13 +34,9 @@
         .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #e0e0e0; font-size: 14px; }
         .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #1f6feb; }
         .form-group textarea { height: 150px; resize: vertical; }
-        .auth-toggle { text-align: center; margin-top: 15px; color: #8b949e; font-size: 14px; }
-        .auth-toggle a { color: #1f6feb; cursor: pointer; text-decoration: none; }
         .msg { padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; display: none; }
         .msg-error { background: #3d1214; border: 1px solid #da3633; color: #f85149; }
         .msg-success { background: #12261e; border: 1px solid #238636; color: #2ea043; }
-
-        /* Board */
         .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .board-header h2 { color: #fff; font-size: 24px; }
         .inquiry-list { display: flex; flex-direction: column; gap: 10px; }
@@ -60,8 +48,6 @@
         .status-waiting { background: #3d2e00; color: #d29922; }
         .status-replied { background: #12261e; color: #2ea043; }
         .empty { text-align: center; color: #484f58; padding: 40px; font-size: 16px; }
-
-        /* Detail */
         .detail-box { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 25px; margin-bottom: 20px; }
         .detail-title { font-size: 20px; color: #fff; margin-bottom: 10px; }
         .detail-content { color: #c9d1d9; line-height: 1.7; white-space: pre-wrap; margin: 15px 0; padding: 15px; background: #0d1117; border-radius: 6px; }
@@ -69,9 +55,8 @@
         .reply-box h4 { color: #2ea043; margin-bottom: 8px; }
         .reply-box p { color: #c9d1d9; line-height: 1.6; white-space: pre-wrap; }
         .back-link { color: #1f6feb; cursor: pointer; font-size: 14px; margin-bottom: 15px; display: inline-block; }
-
-        /* Admin */
         .admin-reply { margin-top: 15px; }
+        .small { font-size: 12px; color: #6e7681; }
     </style>
 </head>
 <body>
@@ -84,25 +69,17 @@
 </nav>
 
 <div class="container">
-    <!-- 로그인/회원가입 -->
+    <!-- 이메일 입력 (간이 인증) -->
     <div id="authSection" style="display:none;">
         <div class="auth-box">
-            <h2 id="authTitle">로그인</h2>
-            <div class="msg msg-error" id="authError"></div>
-            <div class="msg msg-success" id="authSuccess"></div>
+            <h2>이메일 인증</h2>
+            <div class="msg" id="authMsg"></div>
             <div class="form-group">
-                <label>이메일</label>
-                <input type="email" id="authEmail" placeholder="이메일 입력">
+                <label>이메일 (본인 글 조회 / 새 문의 작성에 사용)</label>
+                <input type="email" id="authEmail" placeholder="example@gmail.com">
             </div>
-            <div class="form-group">
-                <label>비밀번호</label>
-                <input type="password" id="authPassword" placeholder="비밀번호 입력 (6자 이상)">
-            </div>
-            <button class="btn btn-green" style="width:100%; padding:12px;" id="authBtn" onclick="handleAuth()">로그인</button>
-            <div class="auth-toggle">
-                <span id="authToggleText">계정이 없으신가요?</span>
-                <a id="authToggleLink" onclick="toggleAuth()">회원가입</a>
-            </div>
+            <button class="btn btn-green" style="width:100%; margin-bottom:10px;" onclick="loginUser()">계속</button>
+            <p class="small" style="text-align:center;">관리자는 동일 입력란에 관리자 토큰을 입력하면 전체 문의를 볼 수 있습니다.</p>
         </div>
     </div>
 
@@ -110,21 +87,22 @@
     <div id="listSection" style="display:none;">
         <div class="board-header">
             <h2>1:1 문의</h2>
-            <button class="btn btn-green" onclick="showWrite()">문의하기</button>
+            <div>
+                <button class="btn btn-green" onclick="showWrite()">문의하기</button>
+                <button class="btn btn-gray" onclick="logout()">로그아웃</button>
+            </div>
         </div>
         <div class="inquiry-list" id="inquiryList"></div>
     </div>
 
     <!-- 문의 작성 -->
     <div id="writeSection" style="display:none;">
-        <div class="board-header">
-            <h2>문의 작성</h2>
-        </div>
         <div class="detail-box">
-            <div class="msg msg-error" id="writeError"></div>
+            <h2 style="margin-bottom:20px;">문의 작성</h2>
+            <div class="msg" id="writeMsg"></div>
             <div class="form-group">
                 <label>제목</label>
-                <input type="text" id="writeTitle" placeholder="문의 제목을 입력하세요">
+                <input type="text" id="writeTitle" placeholder="문의 제목을 입력하세요" maxlength="200">
             </div>
             <div class="form-group">
                 <label>내용</label>
@@ -132,7 +110,7 @@
             </div>
             <div style="display:flex; gap:10px; justify-content:flex-end;">
                 <button class="btn btn-gray" onclick="showList()">취소</button>
-                <button class="btn btn-green" onclick="submitInquiry()">등록</button>
+                <button class="btn btn-green" onclick="submitInquiry()">제출</button>
             </div>
         </div>
     </div>
@@ -142,270 +120,191 @@
         <a class="back-link" onclick="showList()">← 목록으로</a>
         <div class="detail-box">
             <div class="inquiry-meta" id="detailMeta"></div>
-            <div class="detail-title" id="detailTitle"></div>
+            <h2 class="detail-title" id="detailTitle"></h2>
             <div class="detail-content" id="detailContent"></div>
-            <div id="detailReply"></div>
-        </div>
-        <!-- 관리자 답변 -->
-        <div id="adminSection" style="display:none;">
-            <div class="detail-box admin-reply">
-                <div class="form-group">
-                    <label>관리자 답변</label>
-                    <textarea id="adminReply" placeholder="답변을 입력하세요"></textarea>
-                </div>
-                <button class="btn btn-blue" onclick="submitReply()">답변 등록</button>
+            <div id="detailReplyBox"></div>
+            <div class="admin-reply" id="adminReplyForm" style="display:none;">
+                <h4 style="color:#1f6feb; margin:15px 0 8px;">관리자 답변 작성</h4>
+                <textarea id="adminReplyText" style="width:100%; padding:10px; background:#0d1117; border:1px solid #30363d; border-radius:6px; color:#e0e0e0; height:120px;"></textarea>
+                <button class="btn btn-blue" style="margin-top:10px;" onclick="submitReply()">답변 등록</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-const SUPABASE_URL = 'https://ixncygyqmgjoqzcociye.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4bmN5Z3lxbWdqb3F6Y29jaXllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MjE4NDgsImV4cCI6MjA5MDQ5Nzg0OH0.r2RWj62PCjREUOURBqkgj9Iq1CjbK9KS-SSWV4UEkuE';
-const ADMIN_EMAIL = 'daumsong@gmail.com';
+// ↓↓↓ 사용자가 직접 채워야 할 값 ↓↓↓
+const SCRIPT_URL = 'https://script.google.com/macros/s/REPLACE_WITH_YOUR_DEPLOYMENT_ID/exec';
+// ↑↑↑ Apps Script 배포 후 받은 웹앱 URL을 여기에 붙여넣기 ↑↑↑
 
-let sb;
-try {
-    const _s = window.supabase || window.Supabase;
-    sb = _s.createClient(SUPABASE_URL, SUPABASE_KEY);
-} catch(e) {
-    document.body.innerHTML = '<div style="color:red;padding:50px;text-align:center;">Supabase 로딩 실패: '+e.message+'<br><br>window.supabase = '+(typeof window.supabase)+'</div>';
-}
-const supabase = sb;
-
-let currentUser = null;
-let isLogin = true;
+// 사용자 상태 (localStorage에 저장)
+let currentEmail = localStorage.getItem('archon_inquiry_email') || '';
+let adminToken   = localStorage.getItem('archon_inquiry_admin_token') || '';
+let isAdmin      = !!adminToken;
 let currentInquiryId = null;
 
-// 초기화
-async function init() {
-    try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-            currentUser = session.user;
-            updateNav();
-            showList();
-        } else {
-            showAuth();
-        }
-    } catch(e) {
-        showAuth();
-    }
+function escapeHtml(s) {
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-
-function updateNav() {
-    const nav = document.getElementById('navRight');
-    if (currentUser) {
-        nav.innerHTML = `
-            <a href="/board/">1:1 문의</a>
-            <span>${maskEmail(currentUser.email)}</span>
-            <button class="btn btn-red" onclick="logout()">로그아웃</button>
-        `;
-    }
+function maskEmail(e) {
+    if (!e || !e.includes('@')) return '****';
+    const [a, b] = e.split('@');
+    return (a.length > 2 ? a.slice(0,2)+'****' : '****') + '@' + b;
 }
-
-// 섹션 전환
+function showMsg(elId, text, type) {
+    const m = document.getElementById(elId);
+    m.textContent = text;
+    m.className = 'msg msg-' + type;
+    m.style.display = 'block';
+}
 function hideAll() {
     ['authSection','listSection','writeSection','detailSection'].forEach(id => {
-        document.getElementById(id).style.display = 'none';
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
     });
 }
-function showAuth() { hideAll(); document.getElementById('authSection').style.display = 'block'; }
-function showList() { hideAll(); document.getElementById('listSection').style.display = 'block'; loadInquiries(); }
-function showWrite() { hideAll(); document.getElementById('writeSection').style.display = 'block'; }
 
-// 로그인/회원가입 토글
-function toggleAuth() {
-    isLogin = !isLogin;
-    document.getElementById('authTitle').textContent = isLogin ? '로그인' : '회원가입';
-    document.getElementById('authBtn').textContent = isLogin ? '로그인' : '회원가입';
-    document.getElementById('authToggleText').textContent = isLogin ? '계정이 없으신가요?' : '이미 계정이 있으신가요?';
-    document.getElementById('authToggleLink').textContent = isLogin ? '회원가입' : '로그인';
-    document.getElementById('authError').style.display = 'none';
-    document.getElementById('authSuccess').style.display = 'none';
+async function api(params) {
+    if (SCRIPT_URL.includes('REPLACE_WITH')) {
+        alert('Apps Script URL이 설정되지 않았습니다. board/index.html의 SCRIPT_URL을 수정해 주세요.');
+        return { ok: false, error: 'no script url' };
+    }
+    try {
+        const r = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            // Apps Script는 application/json + CORS preflight를 차단하므로
+            // text/plain으로 보내야 preflight 없이 전달됨 (서버측 JSON.parse)
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(params),
+        });
+        return await r.json();
+    } catch (err) {
+        return { ok: false, error: String(err) };
+    }
 }
 
-// 인증 처리
-async function handleAuth() {
-    const email = document.getElementById('authEmail').value.trim();
-    const password = document.getElementById('authPassword').value;
-    const errorEl = document.getElementById('authError');
-    const successEl = document.getElementById('authSuccess');
-    errorEl.style.display = 'none';
-    successEl.style.display = 'none';
+function loginUser() {
+    const v = document.getElementById('authEmail').value.trim();
+    if (!v) { showMsg('authMsg', '이메일 또는 관리자 토큰을 입력하세요.', 'error'); return; }
+    if (v.includes('@')) {
+        currentEmail = v.toLowerCase();
+        adminToken = '';
+        isAdmin = false;
+        localStorage.setItem('archon_inquiry_email', currentEmail);
+        localStorage.removeItem('archon_inquiry_admin_token');
+    } else {
+        // 관리자 토큰으로 간주
+        adminToken = v;
+        currentEmail = '';
+        isAdmin = true;
+        localStorage.setItem('archon_inquiry_admin_token', adminToken);
+        localStorage.removeItem('archon_inquiry_email');
+    }
+    showList();
+}
 
-    if (!email || !password) {
-        errorEl.textContent = '이메일과 비밀번호를 입력해 주세요.';
-        errorEl.style.display = 'block';
+function logout() {
+    currentEmail = '';
+    adminToken = '';
+    isAdmin = false;
+    localStorage.removeItem('archon_inquiry_email');
+    localStorage.removeItem('archon_inquiry_admin_token');
+    showAuth();
+}
+
+function showAuth() {
+    hideAll();
+    document.getElementById('authSection').style.display = 'block';
+}
+
+async function showList() {
+    if (!currentEmail && !isAdmin) { showAuth(); return; }
+    hideAll();
+    document.getElementById('listSection').style.display = 'block';
+    const listEl = document.getElementById('inquiryList');
+    listEl.innerHTML = '<div class="empty">불러오는 중...</div>';
+    const params = isAdmin ? { action: 'list', token: adminToken } : { action: 'list', email: currentEmail };
+    const res = await api(params);
+    if (!res.ok) {
+        listEl.innerHTML = `<div class="empty">목록 조회 실패: ${escapeHtml(res.error || '알 수 없음')}</div>`;
         return;
     }
-
-    if (isLogin) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-            errorEl.textContent = '로그인 실패: 이메일 또는 비밀번호를 확인하세요.';
-            errorEl.style.display = 'block';
-        } else {
-            currentUser = data.user;
-            updateNav();
-            showList();
-        }
-    } else {
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        if (error) {
-            errorEl.textContent = '회원가입 실패: ' + error.message;
-            errorEl.style.display = 'block';
-        } else {
-            successEl.textContent = '회원가입 완료! 이메일 인증 후 로그인해 주세요.';
-            successEl.style.display = 'block';
-        }
-    }
-}
-
-// 로그아웃
-async function logout() {
-    await supabase.auth.signOut();
-    currentUser = null;
-    location.reload();
-}
-
-// 문의 목록 로드
-async function loadInquiries() {
-    const listEl = document.getElementById('inquiryList');
-    let query;
-
-    // 모든 사용자: 전체 문의 목록 표시
-    query = supabase.from('inquiries').select('*').order('created_at', { ascending: false });
-
-    const { data, error } = await query;
-    if (error || !data || data.length === 0) {
+    const items = res.items || [];
+    if (items.length === 0) {
         listEl.innerHTML = '<div class="empty">문의 내역이 없습니다.</div>';
         return;
     }
-
-    listEl.innerHTML = data.map(item => `
-        <div class="inquiry-item" onclick="showDetail(${item.id})">
+    listEl.innerHTML = items.map(it => `
+        <div class="inquiry-item" onclick="showDetail('${escapeHtml(it.id)}')">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div class="inquiry-title">${escapeHtml(item.title)}</div>
-                <span class="inquiry-status ${item.status === '답변완료' ? 'status-replied' : 'status-waiting'}">${item.status}</span>
+                <div class="inquiry-title">${escapeHtml(it.title)}</div>
+                <span class="inquiry-status ${it.status === '답변완료' ? 'status-replied' : 'status-waiting'}">${escapeHtml(it.status)}</span>
             </div>
             <div class="inquiry-meta">
-                ${currentUser.email === ADMIN_EMAIL ? item.user_email : maskEmail(item.user_email)} | ${new Date(item.created_at).toLocaleDateString('ko-KR')}
+                ${isAdmin ? escapeHtml(it.user_email) : maskEmail(it.user_email)} | ${new Date(it.created_at).toLocaleDateString('ko-KR')}
             </div>
         </div>
     `).join('');
 }
 
-// 문의 상세
+function showWrite() {
+    if (isAdmin) { alert('관리자 모드에서는 문의를 작성할 수 없습니다. 일반 이메일로 다시 로그인하세요.'); return; }
+    hideAll();
+    document.getElementById('writeSection').style.display = 'block';
+    document.getElementById('writeTitle').value = '';
+    document.getElementById('writeContent').value = '';
+    document.getElementById('writeMsg').style.display = 'none';
+}
+
+async function submitInquiry() {
+    const title = document.getElementById('writeTitle').value.trim();
+    const content = document.getElementById('writeContent').value.trim();
+    if (!title || !content) { showMsg('writeMsg', '제목과 내용을 모두 입력하세요.', 'error'); return; }
+    const res = await api({ action: 'create', email: currentEmail, title, content });
+    if (!res.ok) { showMsg('writeMsg', '제출 실패: ' + (res.error || ''), 'error'); return; }
+    showList();
+}
+
 async function showDetail(id) {
     hideAll();
     document.getElementById('detailSection').style.display = 'block';
     currentInquiryId = id;
-
-    const { data, error } = await supabase.from('inquiries').select('*').eq('id', id).single();
-    if (error || !data) return;
-
-    // 본인 문의 또는 관리자만 상세 보기 가능
-    if (data.user_id !== currentUser.id && currentUser.email !== ADMIN_EMAIL) {
-        alert('본인의 문의만 확인할 수 있습니다.');
-        showList();
-        return;
-    }
-
+    const params = isAdmin
+        ? { action: 'get', id, token: adminToken }
+        : { action: 'get', id, email: currentEmail };
+    const res = await api(params);
+    if (!res.ok) { alert('상세 조회 실패: ' + (res.error || '')); showList(); return; }
+    const it = res.item;
     document.getElementById('detailMeta').textContent =
-        `${currentUser.email === ADMIN_EMAIL ? data.user_email : maskEmail(data.user_email)} | ${new Date(data.created_at).toLocaleDateString('ko-KR')} | ${data.status}`;
-    document.getElementById('detailTitle').textContent = data.title;
-    document.getElementById('detailContent').textContent = data.content;
-
-    const replyEl = document.getElementById('detailReply');
-    if (data.reply) {
-        replyEl.innerHTML = `
+        `${isAdmin ? it.user_email : maskEmail(it.user_email)} | ${new Date(it.created_at).toLocaleDateString('ko-KR')} | ${it.status}`;
+    document.getElementById('detailTitle').textContent = it.title;
+    document.getElementById('detailContent').textContent = it.content;
+    const rb = document.getElementById('detailReplyBox');
+    if (it.admin_reply) {
+        rb.innerHTML = `
             <div class="reply-box">
-                <h4>관리자 답변</h4>
-                <p>${escapeHtml(data.reply)}</p>
-                <div style="font-size:12px; color:#8b949e; margin-top:8px;">${data.replied_at ? new Date(data.replied_at).toLocaleDateString('ko-KR') : ''}</div>
-            </div>
-        `;
+                <h4>관리자 답변 ${it.replied_at ? `<span class="small">(${new Date(it.replied_at).toLocaleDateString('ko-KR')})</span>` : ''}</h4>
+                <p>${escapeHtml(it.admin_reply)}</p>
+            </div>`;
     } else {
-        replyEl.innerHTML = '';
+        rb.innerHTML = '';
     }
-
-    // 관리자만 답변 폼 표시
-    const adminEl = document.getElementById('adminSection');
-    if (currentUser.email === ADMIN_EMAIL) {
-        adminEl.style.display = 'block';
-        document.getElementById('adminReply').value = data.reply || '';
-    } else {
-        adminEl.style.display = 'none';
-    }
+    document.getElementById('adminReplyForm').style.display = isAdmin ? 'block' : 'none';
+    document.getElementById('adminReplyText').value = it.admin_reply || '';
 }
 
-// 문의 등록
-async function submitInquiry() {
-    const title = document.getElementById('writeTitle').value.trim();
-    const content = document.getElementById('writeContent').value.trim();
-    const errorEl = document.getElementById('writeError');
-
-    if (!title || !content) {
-        errorEl.textContent = '제목과 내용을 입력해 주세요.';
-        errorEl.style.display = 'block';
-        return;
-    }
-
-    const { error } = await supabase.from('inquiries').insert({
-        user_id: currentUser.id,
-        user_email: currentUser.email,
-        title: title,
-        content: content
-    });
-
-    if (error) {
-        errorEl.textContent = '등록 실패: ' + error.message;
-        errorEl.style.display = 'block';
-    } else {
-        document.getElementById('writeTitle').value = '';
-        document.getElementById('writeContent').value = '';
-        showList();
-    }
-}
-
-// 관리자 답변 등록
 async function submitReply() {
-    const reply = document.getElementById('adminReply').value.trim();
-    if (!reply) return;
-
-    const { error } = await supabase.from('inquiries').update({
-        reply: reply,
-        status: '답변완료',
-        replied_at: new Date().toISOString()
-    }).eq('id', currentInquiryId);
-
-    if (!error) {
-        showDetail(currentInquiryId);
-    }
+    const reply = document.getElementById('adminReplyText').value.trim();
+    if (!reply) { alert('답변 내용을 입력하세요.'); return; }
+    const res = await api({ action: 'reply', id: currentInquiryId, reply, token: adminToken });
+    if (!res.ok) { alert('답변 등록 실패: ' + (res.error || '')); return; }
+    showDetail(currentInquiryId);
 }
 
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-function maskEmail(email) {
-    const [name, domain] = email.split('@');
-    const masked = name.slice(0, 3) + '*'.repeat(Math.max(name.length - 3, 2));
-    return masked + '@' + domain;
-}
-
-// Enter 키로 로그인
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && document.getElementById('authSection').style.display !== 'none') {
-        handleAuth();
-    }
-});
-
-init();
+// 초기 진입
+if (currentEmail || isAdmin) showList();
+else showAuth();
 </script>
-
 </body>
 </html>
