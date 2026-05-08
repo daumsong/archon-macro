@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archon Macro - 자주 묻는 질문</title>
+    <script>
+    (function() {
+        try {
+            if (sessionStorage.getItem('archon_manual_unlocked') === '1') return;
+        } catch (e) {}
+        var pwd = prompt("FAQ 비밀번호를 입력하세요:");
+        if (pwd === "리니지") {
+            try { sessionStorage.setItem('archon_manual_unlocked', '1'); } catch (e) {}
+            return;
+        }
+        alert("비밀번호가 올바르지 않거나 입력이 취소되었습니다.");
+        window.location.replace("/");
+    })();
+    </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-3CTDW86D13"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-3CTDW86D13');</script>
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -50,6 +64,17 @@
 
 <div class="container">
     <h1>자주 묻는 질문 (FAQ)</h1>
+
+    <div class="category">게임창 설정 관련</div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">게임창 해상도(크기)는 얼마로 설정해야 하나요? <span class="faq-arrow">▼</span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+            게임창의 해상도(크기)는 <b>최소 1280×960 이상</b>을 유지해야 인식에 어려움이 없습니다.<br>
+            그 이하로 줄이면 HP/MP 게이지, 텍스트 인식, 템플릿 매칭 정확도가 크게 떨어질 수 있습니다.<br><br>
+            ※ 좌표를 새로 지정한 후 게임창 크기를 변경하면 비율이 어긋날 수 있으니, <b>주로 사용할 크기로 고정한 다음 좌표를 지정</b>하는 것을 권장합니다.
+        </div></div>
+    </div>
 
     <div class="category">설치 관련</div>
 
@@ -175,17 +200,6 @@
         <div class="faq-a"><div class="faq-a-inner">
             설정 변경 후 반드시 <b>'저장'</b> 버튼을 눌러야 적용됩니다.<br>
             저장하지 않고 창을 닫으면 변경사항이 취소됩니다.
-        </div></div>
-    </div>
-
-    <div class="category">게임창 설정 관련</div>
-
-    <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-q">게임창 해상도(크기)는 얼마로 설정해야 하나요? <span class="faq-arrow">▼</span></div>
-        <div class="faq-a"><div class="faq-a-inner">
-            게임창의 해상도(크기)는 <b>최소 1280×960 이상</b>을 유지해야 인식에 어려움이 없습니다.<br>
-            그 이하로 줄이면 HP/MP 게이지, 텍스트 인식, 템플릿 매칭 정확도가 크게 떨어질 수 있습니다.<br><br>
-            ※ 좌표를 새로 지정한 후 게임창 크기를 변경하면 비율이 어긋날 수 있으니, <b>주로 사용할 크기로 고정한 다음 좌표를 지정</b>하는 것을 권장합니다.
         </div></div>
     </div>
 </div>
