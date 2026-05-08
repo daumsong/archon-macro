@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archon Macro - 사용 설명서</title>
+    <script>
+    (function() {
+        try {
+            if (sessionStorage.getItem('archon_manual_unlocked') === '1') return;
+        } catch (e) {}
+        var pwd = prompt("설명서 비밀번호를 입력하세요:");
+        if (pwd === "리니지") {
+            try { sessionStorage.setItem('archon_manual_unlocked', '1'); } catch (e) {}
+            return;
+        }
+        alert("비밀번호가 올바르지 않거나 입력이 취소되었습니다.");
+        window.location.replace("/");
+    })();
+    </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-3CTDW86D13"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-3CTDW86D13');</script>
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
