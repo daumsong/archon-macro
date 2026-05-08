@@ -328,7 +328,6 @@
 <!-- HP / MP 게이지 -->
 <div class="coord-card">
     <h4>① HP 게이지 / MP 게이지</h4>
-    <p class="key">키: hp_gauge / mp_gauge | 사용처: 쫄법사 자동힐, ATS HP/MP 검사, 자동버프 마나 임계</p>
     <div class="img-wrap">
         <img src="img/coord_hpmp.png" alt="HP/MP 좌표">
     </div>
@@ -337,20 +336,18 @@
     <p>※ 게이지가 100% 채워졌을 때 기준으로 막대 영역을 정확히 감싸야 합니다. 너무 좁으면 측정이 부정확합니다.</p>
 </div>
 
-<!-- 인벤토리 영역 -->
+<!-- 숫돌 인식 좌표 지정 -->
 <div class="coord-card">
-    <h4>② 인벤토리 영역 (수리 알림)</h4>
-    <p class="key">키: repair_region | 사용처: 자동손상수리 — 화면의 손상 알림 검사 영역</p>
+    <h4>② 숫돌 인식 좌표 지정</h4>
     <div class="img-wrap tiny">
-        <img src="img/coord_repair.png" alt="인벤토리 영역">
+        <img src="img/coord_dmg_region.png" alt="숫돌 인식 영역">
     </div>
-    <p>인벤토리 창이 떠 있을 때 손상 표시(빨간 X)가 나타나는 영역을 감쌉니다.</p>
+    <p>인벤토리에서 숫돌(망치)을 보관하는 슬롯 영역을 감쌉니다. 숫돌이 어느 칸에 있을지 모르므로 충분히 넓게 지정하세요.</p>
 </div>
 
 <!-- 타락한 땅 인식 -->
 <div class="coord-card">
     <h4>③ 타락한 땅 인식</h4>
-    <p class="key">키: cursed_region | 사용처: 1단계 — "타락한 축복의 땅" 텍스트 검사</p>
     <div class="img-wrap small">
         <img src="img/coord_cursed.png" alt="타락한 땅 인식 좌표">
     </div>
@@ -360,7 +357,6 @@
 <!-- Restart 인식 -->
 <div class="coord-card">
     <h4>④ Restart 인식 + Restart 클릭</h4>
-    <p class="key">키: cursed_check2_region + cursed_click_target | 사용처: 2단계 — 키순서 후 Restart 다이얼로그 자동 클릭</p>
     <div class="img-wrap tiny">
         <img src="img/coord_restart.png" alt="Restart 좌표">
     </div>
@@ -371,27 +367,24 @@
 <!-- ATS남은 시간 인식 -->
 <div class="coord-card">
     <h4>⑤ ATS남은 시간 인식</h4>
-    <p class="key">키: cursed_check3_region | 사용처: 3단계 — '남은시간' 미검출 시 타락한 땅 자동 토글 OFF</p>
     <div class="img-wrap small">
         <img src="img/coord_remaintime.png" alt="ATS 남은 시간 좌표">
     </div>
     <p>ATS 표시줄의 "남은시간 8시간 33분" 같은 텍스트 영역을 감쌉니다.</p>
 </div>
 
-<!-- 숫돌 인식영역 -->
+<!-- 인벤토리 영역 좌표 지정 -->
 <div class="coord-card">
-    <h4>⑥ 숫돌 인식영역</h4>
-    <p class="key">키: dmg_region | 사용처: 인벤토리 내부에서 숫돌(망치) 아이콘 위치 검색</p>
+    <h4>⑥ 인벤토리 영역 좌표 지정</h4>
     <div class="img-wrap tiny">
-        <img src="img/coord_dmg_region.png" alt="숫돌 영역">
+        <img src="img/coord_repair.png" alt="인벤토리 영역">
     </div>
-    <p>인벤토리에서 숫돌을 보관하는 슬롯 영역(보통 인벤 좌측 한 줄)을 감쌉니다. 숫돌이 어느 칸에 있을지 모르므로 충분히 넓게.</p>
+    <p>자동손상수리가 동작할 때 검사하는 인벤토리 전체 영역을 감쌉니다. 인벤 창이 떠 있을 때 모든 슬롯이 들어가도록 넓게 지정하세요.</p>
 </div>
 
 <!-- 손상도 인식 + 손상도 체크 무기 좌표 -->
 <div class="coord-card">
     <h4>⑦ 손상도 인식 + 손상도 체크 무기 좌표</h4>
-    <p class="key">키: dmglvl_region + dmg_target | 사용처: 손상 레벨 표시 영역 + 수리할 무기 위치</p>
     <div class="img-wrap tiny">
         <img src="img/coord_dmglvl.png" alt="손상도 인식">
     </div>
@@ -405,13 +398,16 @@
 <!-- 자동버프 영역 별도 -->
 <div class="coord-card">
     <h4>⑧ 자동버프 인식영역 + 거래/파티 클릭</h4>
-    <p class="key">자동버프 탭의 [🎯 인식영역] 버튼에서 별도 설정</p>
     <div class="img-wrap small">
         <img src="img/buff_region_dialog.png" alt="자동버프 인식영역">
     </div>
     <p><b>인식영역 (좌상단/우하단)</b>: 거래 요청 / 파티 초대 다이얼로그가 뜨는 영역. 텍스트만 잘 보이면 충분히 좁게.</p>
     <p><b>거래 클릭</b>: "아이템 거래를" 매칭 시 클릭할 [수락] 버튼.</p>
     <p><b>파티 클릭</b>: "승낙하시" 매칭 시 클릭할 [수락] 버튼.</p>
+    <div class="img-wrap">
+        <img src="img/coord_buff_example.png" alt="자동버프 인식영역 예시">
+        <div class="img-caption">예시 — 거래 안내 문구가 출력되는 채팅 라인을 빨간 박스처럼 감싸도록 지정</div>
+    </div>
 </div>
 
 <!-- 인벤 전체 참고 -->
