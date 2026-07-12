@@ -122,7 +122,7 @@
 const DB_URL = "https://archon-remote-default-rtdb.asia-southeast1.firebasedatabase.app";
 // ================================================================
 
-let CODE = null, pollTimer = null;
+let CODE = null, pollTimer = null, kaTimer = null;
 
 const $ = s => document.querySelector(s);
 function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show");
@@ -209,11 +209,13 @@ function connect(code){
   $("#panel").classList.remove("hidden");
   pollStatus();
   clearInterval(pollTimer); pollTimer = setInterval(pollStatus, 2500);
-  sendCmd("status"); // 연결 즉시 상태 요청
+  sendCmd("status"); // 연결 즉시 상태 요청 (앱 빠른폴링 진입)
+  // keepalive — 연결 중엔 15초마다 신호 보내 앱이 빠른 폴링 유지 (F키 즉각 반응)
+  clearInterval(kaTimer); kaTimer = setInterval(()=>{ if(CODE) sendCmd("status"); }, 15000);
 }
 
 function logout(){
-  CODE=null; clearInterval(pollTimer); localStorage.removeItem("archon_code");
+  CODE=null; clearInterval(pollTimer); clearInterval(kaTimer); localStorage.removeItem("archon_code");
   $("#panel").classList.add("hidden"); $("#loginCard").classList.remove("hidden");
 }
 
