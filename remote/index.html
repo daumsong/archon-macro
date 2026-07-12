@@ -89,8 +89,6 @@
       <img id="shotImg" style="width:100%;border-radius:8px;margin-top:10px;display:none" alt="">
       <div id="shotMsg" class="muted" style="margin-top:6px"></div>
     </div>
-
-    <button class="ghost" data-cmd="status">🔄 상태 새로고침</button>
   </div>
 </div>
 
@@ -213,8 +211,20 @@ document.querySelectorAll("[data-cmd]").forEach(b=>
 
 // 화면 보기 (온디맨드 캡쳐)
 let shotReqTs = 0, shotTimer = null;
+const SHOT_TEXT = "📷 화면 보기 (1장 캡쳐)";
 $("#shotBtn").addEventListener("click", async ()=>{
   if(!CODE) return;
+  const btn = $("#shotBtn");
+  if(btn.disabled) return;
+  // 오남용 방지 — 클릭 후 10초 쿨다운
+  btn.disabled = true;
+  let left = 10;
+  btn.textContent = `📷 대기 ${left}초`;
+  const cd = setInterval(()=>{
+    left--;
+    if(left<=0){ clearInterval(cd); btn.disabled=false; btn.textContent=SHOT_TEXT; }
+    else btn.textContent = `📷 대기 ${left}초`;
+  }, 1000);
   shotReqTs = Date.now();
   $("#shotMsg").textContent = "캡쳐 요청 중…";
   await sendCmd("shot");
