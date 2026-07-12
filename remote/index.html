@@ -142,7 +142,10 @@ function renderStatus(s){
   const online = s && s.ts && (Date.now()-s.ts) < 15000; // 15초 내 갱신 = 온라인
   $("#dot").className = "dot " + (online ? "on" : "off");
   if(!s){ $("#stateText").textContent = "응답 없음"; $("#seenText").textContent="—"; setButtons(null,false); return; }
-  const hunt=!!s.hunt, pf=!!s.pathfind, rs=!!s.restock;
+  // 신형식(불리언) + 구형식(state 문자열) 둘 다 호환
+  const hunt = !!s.hunt || s.state==='hunting';
+  const pf   = !!s.pathfind || s.state==='pathfind';
+  const rs   = !!s.restock || s.state==='restock';
   const busy = hunt || pf || rs;   // 자동사냥 계열 동작 중
   // 상태 라벨 (우선순위: 보급/길찾기 > 자동사냥 > 대기)
   let label;
