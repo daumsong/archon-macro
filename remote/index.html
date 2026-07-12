@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Archon 원격 제어</title>
+<style>
+  :root { --bg:#12151b; --card:#1b1f27; --line:#2a3140; --fg:#e8ecf2; --muted:#8b93a3;
+          --accent:#4a9eff; --green:#2ec76b; --red:#e05656; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font-family:-apple-system,'맑은 고딕',system-ui,sans-serif; }
+  .wrap { max-width:480px; margin:0 auto; padding:20px 16px 40px; }
+  h1 { font-size:20px; margin:8px 0 20px; text-align:center; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px;
+          padding:16px; margin-bottom:14px; }
+  label { display:block; color:var(--muted); font-size:12px; margin-bottom:6px; }
+  input { width:100%; padding:14px; font-size:18px; letter-spacing:2px; text-align:center;
+          background:#0e1116; color:var(--fg); border:1px solid var(--line); border-radius:10px; }
+  button { width:100%; padding:15px; font-size:16px; font-weight:600; border:0; border-radius:10px;
+           color:#fff; background:var(--accent); cursor:pointer; margin-top:10px; }
+  button:active { opacity:.8; }
+  button.ghost { background:#2a3140; }
+  button.green { background:var(--green); }
+  button.red { background:var(--red); }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .grid button { margin-top:0; }
+  .status { display:flex; align-items:center; gap:10px; }
+  .dot { width:10px; height:10px; border-radius:50%; background:#555; flex:0 0 auto; }
+  .dot.on { background:var(--green); box-shadow:0 0 8px var(--green); }
+  .dot.off { background:var(--red); }
+  .muted { color:var(--muted); font-size:13px; }
+  .row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--line); }
+  .row:last-child { border-bottom:0; }
+  .hidden { display:none; }
+  .toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%);
+           background:#000; color:#fff; padding:10px 16px; border-radius:20px; font-size:14px;
+           opacity:0; transition:opacity .2s; pointer-events:none; }
+  .toast.show { opacity:.92; }
+  .bar { height:8px; background:#0e1116; border-radius:5px; overflow:hidden; margin-top:4px; }
+  .bar > i { display:block; height:100%; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎮 Archon 원격 제어</h1>
+
+  <!-- 1) 코드 입력 -->
+  <div id="loginCard" class="card">
+    <label>원격 코드 (아콘 화면에 표시된 코드)</label>
+    <input id="codeInput" inputmode="text" autocapitalize="characters" placeholder="예: A7K9P2" maxlength="10">
+    <button id="connectBtn">연결</button>
+    <p class="muted" style="margin:12px 0 0">아콘 프로그램의 <b>원격 제어</b>에서 표시된 코드를 입력하세요.</p>
+  </div>
+
+  <!-- 2) 제어판 -->
+  <div id="panel" class="hidden">
+    <div class="card">
+      <div class="status">
+        <span id="dot" class="dot"></span>
+        <div style="flex:1">
+          <div id="stateText" style="font-weight:600">상태 확인 중…</div>
+          <div id="seenText" class="muted">—</div>
+        </div>
+        <button class="ghost" style="width:auto;padding:8px 12px;margin:0" id="logoutBtn">해제</button>
+      </div>
+      <div class="row" style="margin-top:12px"><span class="muted">HP</span><span id="hpText">—</span></div>
+      <div class="bar"><i id="hpBar" style="width:0;background:var(--red)"></i></div>
+      <div class="row"><span class="muted">MP</span><span id="mpText">—</span></div>
+      <div class="bar"><i id="mpBar" style="width:0;background:var(--accent)"></i></div>
+    </div>
+
+    <div class="card">
+      <label>자동사냥</label>
+      <div class="grid">
+        <button class="green" data-cmd="hunt_on">▶ 시작</button>
+        <button class="red" data-cmd="hunt_off">■ 중단</button>
+      </div>
+      <button class="ghost" data-cmd="move_hunt">🚚 이동 후 사냥</button>
+    </div>
+
+    <div class="card">
+      <label>자동쫄법사</label>
+      <div class="grid">
+        <button class="green" data-cmd="jjol_on">▶ 시작</button>
+        <button class="red" data-cmd="jjol_off">■ 중단</button>
+      </div>
+    </div>
+
+    <button class="ghost" data-cmd="status">🔄 상태 새로고침</button>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// ===================== 설정 (아콘과 동일하게) =====================
+// Firebase Realtime Database URL — 프로젝트 만든 뒤 여기에 붙여넣기
+const DB_URL = "https://archon-remote-default-rtdb.asia-southeast1.firebasedatabase.app";
+// ================================================================
+
+let CODE = null, pollTimer = null;
+
+const $ = s => document.querySelector(s);
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1600); }
+
+function roomUrl(path){ return `${DB_URL}/rooms/${CODE}/${path}.json`; }
+
+async function sendCmd(cmd){
+  if(!CODE) return;
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+  try{
+    await fetch(roomUrl("cmd"), { method:"PUT",
+      body: JSON.stringify({ id, cmd, ts: Date.now() }) });
+    toast("전송: " + cmd);
+  }catch(e){ toast("전송 실패 (네트워크)"); }
+}
+
+async function pollStatus(){
+  if(!CODE) return;
+  try{
+    const r = await fetch(roomUrl("status"));
+    const s = await r.json();
+    renderStatus(s);
+  }catch(e){ renderStatus(null); }
+}
+
+function fmtAge(ts){
+  if(!ts) return "—";
+  const sec = Math.max(0, Math.round((Date.now()-ts)/1000));
+  if(sec < 60) return sec + "초 전";
+  return Math.round(sec/60) + "분 전";
+}
+
+function renderStatus(s){
+  const online = s && s.ts && (Date.now()-s.ts) < 15000; // 15초 내 갱신 = 온라인
+  $("#dot").className = "dot " + (online ? "on" : "off");
+  if(!s){ $("#stateText").textContent = "응답 없음"; $("#seenText").textContent="—"; return; }
+  const stMap = { hunting:"자동사냥 중", jjol:"자동쫄법사 중", idle:"대기", restock:"보급 중", dead:"사망/복귀 중" };
+  $("#stateText").textContent = (online?"":"⚠ 오프라인 · ") + (stMap[s.state] || s.state || "대기");
+  $("#seenText").textContent = "최근 갱신 " + fmtAge(s.ts);
+  const hp = (s.hp ?? -1), mp = (s.mp ?? -1);
+  $("#hpText").textContent = hp>=0 ? hp+"%" : "—";
+  $("#mpText").textContent = mp>=0 ? mp+"%" : "—";
+  $("#hpBar").style.width = (hp>=0?hp:0)+"%";
+  $("#mpBar").style.width = (mp>=0?mp:0)+"%";
+}
+
+function connect(code){
+  CODE = code.trim().toUpperCase();
+  if(!CODE){ toast("코드를 입력하세요"); return; }
+  localStorage.setItem("archon_code", CODE);
+  $("#loginCard").classList.add("hidden");
+  $("#panel").classList.remove("hidden");
+  pollStatus();
+  clearInterval(pollTimer); pollTimer = setInterval(pollStatus, 2500);
+  sendCmd("status"); // 연결 즉시 상태 요청
+}
+
+function logout(){
+  CODE=null; clearInterval(pollTimer); localStorage.removeItem("archon_code");
+  $("#panel").classList.add("hidden"); $("#loginCard").classList.remove("hidden");
+}
+
+// 이벤트
+$("#connectBtn").addEventListener("click", ()=>connect($("#codeInput").value));
+$("#codeInput").addEventListener("keydown", e=>{ if(e.key==="Enter") connect(e.target.value); });
+$("#logoutBtn").addEventListener("click", logout);
+document.querySelectorAll("[data-cmd]").forEach(b=>
+  b.addEventListener("click", ()=>{ sendCmd(b.dataset.cmd); if(b.dataset.cmd!=="status") setTimeout(pollStatus,1200); }));
+
+// 자동 재연결 (마지막 코드 기억)
+const saved = localStorage.getItem("archon_code");
+if(saved && DB_URL && !DB_URL.includes("__")){ $("#codeInput").value = saved; connect(saved); }
+if(DB_URL.includes("__")){ toast("설정 필요: DB_URL 미입력"); }
+</script>
+</body>
+</html>
