@@ -81,14 +81,6 @@
     </div>
 
     <div class="card">
-      <label>자동쫄법사</label>
-      <div class="grid">
-        <button class="green" data-cmd="jjol_on">▶ 시작</button>
-        <button class="red" data-cmd="jjol_off">■ 중단</button>
-      </div>
-    </div>
-
-    <div class="card">
       <label>게임 화면</label>
       <button class="ghost" id="shotBtn">📷 화면 보기 (1장 캡쳐)</button>
       <img id="shotImg" style="width:100%;border-radius:8px;margin-top:10px;display:none" alt="">
@@ -147,15 +139,14 @@ function renderStatus(s){
   const online = s && s.ts && (Date.now()-s.ts) < 15000; // 15초 내 갱신 = 온라인
   $("#dot").className = "dot " + (online ? "on" : "off");
   if(!s){ $("#stateText").textContent = "응답 없음"; $("#seenText").textContent="—"; setButtons(null,false); return; }
-  const hunt=!!s.hunt, jjol=!!s.jjol, pf=!!s.pathfind, rs=!!s.restock;
-  // 상태 라벨 (우선순위: 보급/길찾기 > 자동사냥 > 자동쫄 > 대기)
+  const hunt=!!s.hunt, pf=!!s.pathfind, rs=!!s.restock;
+  const busy = hunt || pf || rs;   // 자동사냥 계열 동작 중
+  // 상태 라벨 (우선순위: 보급/길찾기 > 자동사냥 > 대기)
   let label;
   if(rs) label="🟡 보급/이동 중";
   else if(pf) label="🟡 길찾기(이동) 중";
-  else if(hunt) label="🟢 자동사냥 중";
-  else if(jjol) label="🟢 자동쫄법사 중";
+  else if(hunt) label="🟢 자동사냥 작동중";
   else label="⚫ 대기";
-  if(jjol && (hunt||rs||pf)) label += " (+자동쫄)";
   $("#stateText").textContent = (online?"":"⚠ 오프라인 · ") + label;
   $("#seenText").textContent = "최근 갱신 " + fmtAge(s.ts);
   const hp = (s.hp ?? -1), mp = (s.mp ?? -1);
@@ -163,23 +154,25 @@ function renderStatus(s){
   $("#mpText").textContent = mp>=0 ? mp+"%" : "—";
   $("#hpBar").style.width = (hp>=0?hp:0)+"%";
   $("#mpBar").style.width = (mp>=0?mp:0)+"%";
-  setButtons(s, online);
+  setButtons(busy, online);
 }
 
-function setButtons(s, online){
-  const busyHunt = s ? (!!s.hunt || !!s.restock || !!s.pathfind) : false;
-  const jjol = s ? !!s.jjol : false;
-  function set(cmd, enabled){
-    const b = document.querySelector(`[data-cmd="${cmd}"]`);
-    if(!b) return;
-    const pend = pending[cmd] && (Date.now()-pending[cmd] < 6000);
-    b.disabled = !online || !enabled || !!pend;
+function setButtons(busy, online){
+  const onBtn = document.querySelector('[data-cmd="hunt_on"]');
+  const offBtn = document.querySelector('[data-cmd="hunt_off"]');
+  const mvBtn = document.querySelector('[data-cmd="move_hunt"]');
+  const pOn = pending['hunt_on'] && (Date.now()-pending['hunt_on'] < 6000);
+  const pMv = pending['move_hunt'] && (Date.now()-pending['move_hunt'] < 6000);
+  const pOff = pending['hunt_off'] && (Date.now()-pending['hunt_off'] < 6000);
+  if(onBtn){
+    onBtn.textContent = busy ? "🟢 작동중" : "▶ 시작";
+    onBtn.disabled = !online || busy || !!pOn || !!pMv;
   }
-  set('hunt_on',  !busyHunt);   // 사냥/이동/보급 중이면 시작 불가
-  set('move_hunt',!busyHunt);
-  set('hunt_off',  busyHunt);   // 사냥 계열 동작 중일 때만 중단 가능
-  set('jjol_on',  !jjol);
-  set('jjol_off',  jjol);
+  if(mvBtn){ mvBtn.disabled = !online || busy || !!pOn || !!pMv; }
+  if(offBtn){
+    offBtn.textContent = busy ? "■ 중단" : "중단됨";
+    offBtn.disabled = !online || !busy || !!pOff;
+  }
 }
 
 function connect(code){
@@ -221,24 +214,27 @@ $("#shotBtn").addEventListener("click", async ()=>{
   await sendCmd("shot");
   clearInterval(shotTimer);
   let tries = 0;
+  // 최적화: 작은 ts만 반복 조회 → 완료되면 이미지 딱 1번만 다운로드 (데이터 절약)
   shotTimer = setInterval(async ()=>{
     tries++;
     try{
-      const r = await fetch(roomUrl("shot"));
-      const s = await r.json();
-      if(s && s.ts && s.ts >= shotReqTs){
-        if(s.img){
-          clearInterval(shotTimer);
-          $("#shotImg").src = "data:image/jpeg;base64," + s.img;
+      const rt = await fetch(roomUrl("shot/ts"));   // ~13바이트
+      const ts = await rt.json();
+      if(ts && ts >= shotReqTs){
+        clearInterval(shotTimer);
+        const ri = await fetch(roomUrl("shot/img")); // 이미지 1번만 (~50KB)
+        const img = await ri.json();
+        if(img){
+          $("#shotImg").src = "data:image/jpeg;base64," + img;
           $("#shotImg").style.display = "block";
           $("#shotMsg").textContent = "캡쳐 " + new Date().toLocaleTimeString();
-        } else if(s.err){
-          clearInterval(shotTimer); $("#shotMsg").textContent = "게임창을 찾을 수 없음";
+        } else {
+          $("#shotMsg").textContent = "게임창을 찾을 수 없음";
         }
       }
     }catch(e){}
-    if(tries > 12){ clearInterval(shotTimer); $("#shotMsg").textContent = "응답 없음 (아콘 실행/원격 켜짐 확인)"; }
-  }, 800);
+    if(tries > 15){ clearInterval(shotTimer); $("#shotMsg").textContent = "응답 없음 (아콘 실행/원격 켜짐 확인)"; }
+  }, 700);
 });
 
 // 자동 재연결 (마지막 코드 기억)
