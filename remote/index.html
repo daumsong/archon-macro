@@ -45,6 +45,16 @@
   .toast.show { opacity:.92; }
   .bar { height:8px; background:#0e1116; border-radius:5px; overflow:hidden; margin-top:4px; }
   .bar > i { display:block; height:100%; }
+  #shotImg { cursor:zoom-in; }
+  .lightbox { position:fixed; inset:0; background:rgba(0,0,0,.94); z-index:1000;
+              display:none; overflow:auto; -webkit-overflow-scrolling:touch; }
+  .lightbox.show { display:block; }
+  .lightbox img { display:block; width:100%; height:auto; }
+  .lightbox .lbclose { position:fixed; top:10px; right:14px; color:#fff; font-size:30px;
+                       line-height:1; z-index:1001; background:rgba(0,0,0,.4); border-radius:50%;
+                       width:44px; height:44px; text-align:center; }
+  .lightbox .lbhint { position:fixed; bottom:14px; left:0; right:0; text-align:center;
+                      color:#bbb; font-size:12px; z-index:1001; pointer-events:none; }
 </style>
 </head>
 <body>
@@ -100,6 +110,11 @@
 </div>
 
 <div id="toast" class="toast"></div>
+<div id="lightbox" class="lightbox">
+  <span class="lbclose">✕</span>
+  <img id="lbImg" alt="">
+  <div class="lbhint">한 번 탭: 확대/축소 · ✕ 또는 배경 탭: 닫기</div>
+</div>
 
 <script>
 // ===================== 설정 (아콘과 동일하게) =====================
@@ -259,6 +274,26 @@ $("#shotBtn").addEventListener("click", async ()=>{
     if(tries > 15){ clearInterval(shotTimer); $("#shotMsg").textContent = "응답 없음 (아콘 실행/원격 켜짐 확인)"; }
   }, 700);
 });
+
+// 캡쳐 이미지 확대 (라이트박스, 모바일 최적화)
+const lb = document.getElementById("lightbox");
+const lbImg = document.getElementById("lbImg");
+let lbZoom = false;
+$("#shotImg").addEventListener("click", ()=>{
+  if(!$("#shotImg").src) return;
+  lbImg.src = $("#shotImg").src;
+  lbZoom = false; lbImg.style.width = "100%";
+  lb.classList.add("show");
+});
+function lbClose(){ lb.classList.remove("show"); lb.scrollTop = 0; }
+document.querySelector(".lbclose").addEventListener("click", lbClose);
+lbImg.addEventListener("click", (e)=>{
+  e.stopPropagation();
+  lbZoom = !lbZoom;
+  lbImg.style.width = lbZoom ? "220%" : "100%";  // 탭하면 확대(가로 스크롤)
+  lbImg.style.cursor = lbZoom ? "zoom-out" : "zoom-in";
+});
+lb.addEventListener("click", lbClose);  // 배경 탭 = 닫기
 
 // F1~F12 키 전송 (각 버튼 1초 쿨다운 — 오남용 방지)
 (function(){
