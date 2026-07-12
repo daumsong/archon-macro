@@ -20,6 +20,7 @@
   button { width:100%; padding:15px; font-size:16px; font-weight:600; border:0; border-radius:10px;
            color:#fff; background:var(--accent); cursor:pointer; margin-top:10px; }
   button:active { opacity:.8; }
+  button:disabled { opacity:.4; cursor:not-allowed; }
   button.ghost { background:#2a3140; }
   button.green { background:var(--green); }
   button.red { background:var(--red); }
@@ -87,6 +88,13 @@
       </div>
     </div>
 
+    <div class="card">
+      <label>게임 화면</label>
+      <button class="ghost" id="shotBtn">📷 화면 보기 (1장 캡쳐)</button>
+      <img id="shotImg" style="width:100%;border-radius:8px;margin-top:10px;display:none" alt="">
+      <div id="shotMsg" class="muted" style="margin-top:6px"></div>
+    </div>
+
     <button class="ghost" data-cmd="status">🔄 상태 새로고침</button>
   </div>
 </div>
@@ -133,18 +141,45 @@ function fmtAge(ts){
   return Math.round(sec/60) + "분 전";
 }
 
+let pending = {};  // 방금 누른 명령 → 잠시 그 버튼 비활성 (중복 클릭 방지)
+
 function renderStatus(s){
   const online = s && s.ts && (Date.now()-s.ts) < 15000; // 15초 내 갱신 = 온라인
   $("#dot").className = "dot " + (online ? "on" : "off");
-  if(!s){ $("#stateText").textContent = "응답 없음"; $("#seenText").textContent="—"; return; }
-  const stMap = { hunting:"자동사냥 중", jjol:"자동쫄법사 중", idle:"대기", restock:"보급 중", dead:"사망/복귀 중" };
-  $("#stateText").textContent = (online?"":"⚠ 오프라인 · ") + (stMap[s.state] || s.state || "대기");
+  if(!s){ $("#stateText").textContent = "응답 없음"; $("#seenText").textContent="—"; setButtons(null,false); return; }
+  const hunt=!!s.hunt, jjol=!!s.jjol, pf=!!s.pathfind, rs=!!s.restock;
+  // 상태 라벨 (우선순위: 보급/길찾기 > 자동사냥 > 자동쫄 > 대기)
+  let label;
+  if(rs) label="🟡 보급/이동 중";
+  else if(pf) label="🟡 길찾기(이동) 중";
+  else if(hunt) label="🟢 자동사냥 중";
+  else if(jjol) label="🟢 자동쫄법사 중";
+  else label="⚫ 대기";
+  if(jjol && (hunt||rs||pf)) label += " (+자동쫄)";
+  $("#stateText").textContent = (online?"":"⚠ 오프라인 · ") + label;
   $("#seenText").textContent = "최근 갱신 " + fmtAge(s.ts);
   const hp = (s.hp ?? -1), mp = (s.mp ?? -1);
   $("#hpText").textContent = hp>=0 ? hp+"%" : "—";
   $("#mpText").textContent = mp>=0 ? mp+"%" : "—";
   $("#hpBar").style.width = (hp>=0?hp:0)+"%";
   $("#mpBar").style.width = (mp>=0?mp:0)+"%";
+  setButtons(s, online);
+}
+
+function setButtons(s, online){
+  const busyHunt = s ? (!!s.hunt || !!s.restock || !!s.pathfind) : false;
+  const jjol = s ? !!s.jjol : false;
+  function set(cmd, enabled){
+    const b = document.querySelector(`[data-cmd="${cmd}"]`);
+    if(!b) return;
+    const pend = pending[cmd] && (Date.now()-pending[cmd] < 6000);
+    b.disabled = !online || !enabled || !!pend;
+  }
+  set('hunt_on',  !busyHunt);   // 사냥/이동/보급 중이면 시작 불가
+  set('move_hunt',!busyHunt);
+  set('hunt_off',  busyHunt);   // 사냥 계열 동작 중일 때만 중단 가능
+  set('jjol_on',  !jjol);
+  set('jjol_off',  jjol);
 }
 
 function connect(code){
@@ -168,7 +203,43 @@ $("#connectBtn").addEventListener("click", ()=>connect($("#codeInput").value));
 $("#codeInput").addEventListener("keydown", e=>{ if(e.key==="Enter") connect(e.target.value); });
 $("#logoutBtn").addEventListener("click", logout);
 document.querySelectorAll("[data-cmd]").forEach(b=>
-  b.addEventListener("click", ()=>{ sendCmd(b.dataset.cmd); if(b.dataset.cmd!=="status") setTimeout(pollStatus,1200); }));
+  b.addEventListener("click", ()=>{
+    if(b.disabled) return;
+    const c = b.dataset.cmd;
+    if(c!=="status"){ pending[c] = Date.now(); b.disabled = true; }
+    sendCmd(c);
+    setTimeout(pollStatus, 1000);
+    setTimeout(pollStatus, 2800);   // 상태 반영되면 버튼 자동 갱신
+  }));
+
+// 화면 보기 (온디맨드 캡쳐)
+let shotReqTs = 0, shotTimer = null;
+$("#shotBtn").addEventListener("click", async ()=>{
+  if(!CODE) return;
+  shotReqTs = Date.now();
+  $("#shotMsg").textContent = "캡쳐 요청 중…";
+  await sendCmd("shot");
+  clearInterval(shotTimer);
+  let tries = 0;
+  shotTimer = setInterval(async ()=>{
+    tries++;
+    try{
+      const r = await fetch(roomUrl("shot"));
+      const s = await r.json();
+      if(s && s.ts && s.ts >= shotReqTs){
+        if(s.img){
+          clearInterval(shotTimer);
+          $("#shotImg").src = "data:image/jpeg;base64," + s.img;
+          $("#shotImg").style.display = "block";
+          $("#shotMsg").textContent = "캡쳐 " + new Date().toLocaleTimeString();
+        } else if(s.err){
+          clearInterval(shotTimer); $("#shotMsg").textContent = "게임창을 찾을 수 없음";
+        }
+      }
+    }catch(e){}
+    if(tries > 12){ clearInterval(shotTimer); $("#shotMsg").textContent = "응답 없음 (아콘 실행/원격 켜짐 확인)"; }
+  }, 800);
+});
 
 // 자동 재연결 (마지막 코드 기억)
 const saved = localStorage.getItem("archon_code");
