@@ -29,6 +29,8 @@
   button.red { background:var(--red); }
   .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
   .grid button { margin-top:0; }
+  .fkeys { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  .fkeys button { margin-top:0; padding:13px 0; background:#2a3140; font-size:15px; }
   .status { display:flex; align-items:center; gap:10px; }
   .dot { width:10px; height:10px; border-radius:50%; background:#555; flex:0 0 auto; }
   .dot.on { background:var(--green); box-shadow:0 0 8px var(--green); }
@@ -88,6 +90,11 @@
       <button class="ghost" id="shotBtn">📷 화면 보기 (1장 캡쳐)</button>
       <img id="shotImg" style="width:100%;border-radius:8px;margin-top:10px;display:none" alt="">
       <div id="shotMsg" class="muted" style="margin-top:6px"></div>
+    </div>
+
+    <div class="card">
+      <label>키 전송 (F1~F12 · 기계식)</label>
+      <div class="fkeys" id="fkeys"></div>
     </div>
   </div>
 </div>
@@ -252,6 +259,22 @@ $("#shotBtn").addEventListener("click", async ()=>{
     if(tries > 15){ clearInterval(shotTimer); $("#shotMsg").textContent = "응답 없음 (아콘 실행/원격 켜짐 확인)"; }
   }, 700);
 });
+
+// F1~F12 키 전송 (각 버튼 1초 쿨다운 — 오남용 방지)
+(function(){
+  const fk = document.getElementById("fkeys");
+  for(let i=1;i<=12;i++){
+    const b = document.createElement("button");
+    b.textContent = "F"+i;
+    b.addEventListener("click", ()=>{
+      if(b.disabled || !CODE) return;
+      sendCmd("key_F"+i);
+      b.disabled = true;
+      setTimeout(()=>{ b.disabled = false; }, 1000);
+    });
+    fk.appendChild(b);
+  }
+})();
 
 // 자동 재연결 (마지막 코드 기억)
 const saved = localStorage.getItem("archon_code");
