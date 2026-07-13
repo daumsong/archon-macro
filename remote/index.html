@@ -313,6 +313,15 @@ lb.addEventListener("click", lbClose);  // 배경 탭 = 닫기
   }
 })();
 
+// 탭 복귀(화면 켜짐/앱 전환 복귀) 시 즉시 재폴링 — 모바일 백그라운드로 멈췄던 것 복구
+document.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState === "visible" && CODE){
+    pollStatus();
+    sendCmd("status");  // 앱 빠른폴링 재진입
+  }
+});
+window.addEventListener("focus", ()=>{ if(CODE){ pollStatus(); } });
+
 // 자동 재연결 (마지막 코드 기억)
 const saved = localStorage.getItem("archon_code");
 if(saved && DB_URL && !DB_URL.includes("__")){ $("#codeInput").value = saved; connect(saved); }
