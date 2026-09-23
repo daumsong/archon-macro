@@ -95,6 +95,16 @@
       <button class="ghost" data-cmd="move_hunt">🚚 이동 후 사냥</button>
     </div>
 
+    <div class="card hidden" id="atsCard">
+      <label>ATS보조</label>
+      <div class="grid">
+        <button class="green" data-cmd="ats_on">▶ 시작</button>
+        <button class="red" data-cmd="ats_off">■ 중단</button>
+      </div>
+      <p class="muted" style="margin:10px 0 0;font-size:12px">
+        ※ 시작하면 자동사냥·보급·길찾기가 함께 중단됩니다. 두 기능은 동시에 켤 수 없습니다.</p>
+    </div>
+
     <div class="card">
       <label>게임 화면</label>
       <button class="ghost" id="shotBtn">📷 화면 보기 (1장 캡쳐)</button>
@@ -167,11 +177,17 @@ function renderStatus(s){
   const pf   = !!s.pathfind || s.state==='pathfind';
   const rs   = !!s.restock || s.state==='restock';
   const busy = hunt || pf || rs;   // 자동사냥 계열 동작 중
+  const ats  = !!s.ats;            // ATS보조 동작 중
+  // 자동사냥 권한이 없는 계정에는 ATS 카드를 아예 보여주지 않는다.
+  // (실제 차단은 앱이 한다 — 여기서 숨기는 건 보기 편하자는 것일 뿐)
+  const atsCard = $("#atsCard");
+  if(atsCard) atsCard.classList.toggle("hidden", !s.perm_ats);
   // 상태 라벨 (우선순위: 보급/길찾기 > 자동사냥 > 대기)
   let label;
   if(rs) label="🟡 보급/이동 중";
   else if(pf) label="🟡 길찾기(이동) 중";
   else if(hunt) label="🟢 자동사냥 작동중";
+  else if(ats) label="🟢 ATS보조 작동중";
   else label="⚫ 대기";
   $("#stateText").textContent = (online?"":"⚠ 오프라인 · ") + label;
   $("#seenText").textContent = "최근 갱신 " + fmtAge(s.ts);
@@ -180,10 +196,10 @@ function renderStatus(s){
   $("#mpText").textContent = mp>=0 ? mp+"%" : "—";
   $("#hpBar").style.width = (hp>=0?hp:0)+"%";
   $("#mpBar").style.width = (mp>=0?mp:0)+"%";
-  setButtons(busy, online);
+  setButtons(busy, online, ats);
 }
 
-function setButtons(busy, online){
+function setButtons(busy, online, ats){
   const onBtn = document.querySelector('[data-cmd="hunt_on"]');
   const offBtn = document.querySelector('[data-cmd="hunt_off"]');
   const mvBtn = document.querySelector('[data-cmd="move_hunt"]');
@@ -192,9 +208,22 @@ function setButtons(busy, online){
   const pOff = pending['hunt_off'] && (Date.now()-pending['hunt_off'] < 6000);
   if(onBtn){
     onBtn.textContent = busy ? "🟢 작동중" : "▶ 시작";
-    onBtn.disabled = !online || busy || !!pOn || !!pMv;
+    onBtn.disabled = !online || busy || ats || !!pOn || !!pMv;
   }
-  if(mvBtn){ mvBtn.disabled = !online || busy || !!pOn || !!pMv; }
+  if(mvBtn){ mvBtn.disabled = !online || busy || ats || !!pOn || !!pMv; }
+  // ATS보조 — 자동사냥과 동시에 켤 수 없으므로 서로 비활성 처리
+  const aOn = document.querySelector('[data-cmd="ats_on"]');
+  const aOff = document.querySelector('[data-cmd="ats_off"]');
+  const pAOn = pending['ats_on'] && (Date.now()-pending['ats_on'] < 6000);
+  const pAOff = pending['ats_off'] && (Date.now()-pending['ats_off'] < 6000);
+  if(aOn){
+    aOn.textContent = ats ? "🟢 작동중" : "▶ 시작";
+    aOn.disabled = !online || ats || !!pAOn;
+  }
+  if(aOff){
+    aOff.textContent = ats ? "■ 중단" : "중단됨";
+    aOff.disabled = !online || !ats || !!pAOff;
+  }
   if(offBtn){
     offBtn.textContent = busy ? "■ 중단" : "중단됨";
     offBtn.disabled = !online || !busy || !!pOff;
