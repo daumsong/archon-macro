@@ -132,11 +132,27 @@
             }
             return false;
         }
+        function goToGuideWithPwd() {
+            if (sessionStorage.getItem('archon_manual_unlocked') === '1') {
+                window.location.href = "/guide/";
+                return false;
+            }
+            var pwd = prompt("가이드 비밀번호를 입력하세요:");
+            if (pwd === null) return false;
+            if (pwd === "리니지") {
+                sessionStorage.setItem('archon_manual_unlocked', '1');
+                window.location.href = "/guide/";
+            } else {
+                alert("비밀번호가 올바르지 않습니다.");
+            }
+            return false;
+        }
         </script>
         <!-- 문의하기 임시 비활성화 (구글시트 백엔드 셋업 대기 중)
         <a href="/board/" class="download-btn" style="background: linear-gradient(135deg, #1f6feb, #388bfd);">문의하기</a>
         -->
         <a href="#" onclick="return goToManualWithPwd();" class="download-btn" style="background: linear-gradient(135deg, #e67e22, #f39c12);">사용설명</a>
+        <a href="#" onclick="return goToGuideWithPwd();" class="download-btn" style="background: linear-gradient(135deg, #16a085, #1abc9c);">기본 가이드</a>
         <a href="#" onclick="return goToFaqWithPwd();" class="download-btn" style="background: linear-gradient(135deg, #6c757d, #868e96);">FAQ</a>
     </div>
     <div class="download-sub">Windows 10/11 지원</div>
