@@ -1292,7 +1292,7 @@
     <tr><td>통합</td><td><span class="st">HP·MP 통합 귀환 사용</span></td><td>꺼짐</td><td>HP 또는 MP <b>하나라도</b> 미만</td><td>HP <span class="val">30%</span> / MP <span class="val">30%</span></td></tr>
   </table>
   <p>모든 임계값은 <span class="val">0~100%</span>입니다. 귀환 키순서 칸 이름은 각각 <span class="st">MP &lt; 임계값 시 귀환 키순서</span> · <span class="st">HP &lt; 임계값 시 귀환 키순서</span> · <span class="st">HP/MP &lt; 임계값 시 귀환 키순서</span>이며, 보통 귀환 스크롤이나 마을 이동 스킬을 넣습니다.</p>
-  <div class="note"><b>예전 설정</b> — 업데이트 전에 여러 개가 켜져 있었다면 처음 실행할 때 하나만 남깁니다: 통합 귀환이 켜져 있었으면 통합, MP·HP 둘 다 켜져 있었으면 HP 귀환(HP 귀환 키순서가 비어 있으면 MP 귀환). HP가 <b>귀환 임계값 아래</b>면 힐을 건너뛰고 바로 귀환합니다(귀환이 먼저).</div>
+  <div class="note"><b>예전 설정</b> — 업데이트 전에 여러 개가 켜져 있었다면 처음 실행할 때 하나만 남깁니다: 통합 귀환이 켜져 있었으면 통합, MP·HP 둘 다 켜져 있었으면 HP 귀환(HP 귀환 키순서가 비어 있으면 MP 귀환). <b>귀환이 항상 최우선입니다</b> — 켜 둔 귀환의 조건(HP든 MP든)이 맞으면 <span class="st">HP 임계값</span> 힐은 발동하지 않고 바로 귀환합니다.</div>
   <div class="warn">스위치를 켰어도 <b>귀환 키순서가 비어 있으면 귀환하지 않습니다</b>. 임계값만 넣고 키순서를 비워 두는 실수가 가장 많습니다.</div>
   <ul>
     <li>MP 귀환에는 별도 스위치가 없습니다. <span class="st">MP 관련 기능 사용</span>이 켜져 있고 MP 귀환 키순서가 들어 있으면 동작합니다.</li>
