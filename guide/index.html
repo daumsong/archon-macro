@@ -818,7 +818,7 @@
   </ul>
   <div class="warn">설정을 바꾼 뒤 <b>반드시 <span class="st">저장</span>을 눌러야</b> 반영됩니다. 저장하지 않고 창을 닫으면 변경이 모두 취소됩니다.</div>
   <div class="note">이 창의 <span class="st">단축키 입력 차단</span> 체크는 값만 기록됩니다. 실제로 게임에 키가 전달되지 않게 막는 것은 <span class="st">단축키</span> 탭의 매크로에만 적용됩니다.</div>
-  <div class="note">창 아래의 <span class="st">↑ 내보내기</span> / <span class="st">↓ 불러오기</span> / <span class="st">☁ 클라우드</span>는 쫄법사 슬롯만이 아니라 <b>프로그램 설정 전체</b>를 다룹니다. <span class="st">↓ 불러오기</span>는 현재 설정을 덮어쓰고 프로그램을 <b>재시작</b>합니다.</div>
+  <div class="note">창 아래의 <span class="st">↑ 내보내기</span> / <span class="st">↓ 불러오기</span> / <span class="st">☁ 클라우드</span>는 쫄법사 슬롯만이 아니라 <b>프로그램 설정 전체</b>를 다룹니다. <span class="st">↓ 불러오기</span>는 현재 설정을 덮어쓰고 프로그램을 <b>재시작</b>합니다. ATS보조 설정만 옮기려면 ATS보조 <span class="st">⚙ 설정</span> 창의 <span class="st">↑ ATS 설정 내보내기</span> / <span class="st">↓ ATS 설정 불러오기</span>를 쓰세요(8-3).</div>
   <!-- SHOT: "쫄법사 단축키 설정" 창 — 슬롯 1이 모드=자동힐 (VIP), HP 임계값=70 %로 설정된 모습 -->
 </div>
 
@@ -1261,6 +1261,14 @@
   <div class="note">HP·MP 확인 간격은 화면에 없는 고정값입니다. 설정을 한 번이라도 저장한 뒤에는 <span class="val">0.3초</span>, 한 번도 저장하지 않았다면 <span class="val">0.5초</span>입니다.</div>
   <div class="note">restart v2가 쓰는 인식영역은 화면에 나오지 않습니다(프로그램이 정해 둔 자리로 고정).</div>
   <!-- SHOT: ATS보조 설정 창 오른쪽 '📍 인식영역 설정' 목록 (HP/MP 게이지 줄의 좌상단·우하단·표기·테스트 버튼이 보이게) -->
+  <h4>ATS 설정만 내보내기 / 불러오기</h4>
+  <p><span class="st">⚙ 설정</span> 창 맨 아래 왼쪽의 <span class="st">↑ ATS 설정 내보내기</span> · <span class="st">↓ ATS 설정 불러오기</span>는 <b>ATS보조 설정만</b> 파일 하나로 옮깁니다. 다른 PC로 옮기거나, 바꾸기 전에 백업해 둘 때 씁니다.</p>
+  <ul>
+    <li><b>담기는 것</b> — 이 장의 힐·귀환·회복·펌프·텔레포트·복귀 확인·restart 설정, 인식영역, <span class="st">🎯 버프 관리</span> · <span class="st">🔍 아이템체크</span> · <span class="st">⏱ 타이머 키순서</span>, ATS 매크로. 아직 <span class="st">저장</span>을 누르지 않은 창의 변경도 함께 담깁니다.</li>
+    <li><b>불러오기</b> — 파일을 고르면 귀환 방식과 버프·아이템체크·타이머·ATS 매크로 개수를 먼저 보여주고 묻습니다. 확인하면 ATS보조 설정만 바꾸고 프로그램을 <b>재시작</b>합니다. 자동사냥·매크로 슬롯 등 <b>다른 탭 설정은 그대로</b>입니다.</li>
+    <li>단축키 탭 <span class="st">↑ 내보내기</span>로 만든 전체 설정 파일을 골라도 그 안의 ATS보조 부분만 가져옵니다. 파일에 ATS 매크로가 없으면 지금 것을 그대로 둡니다.</li>
+  </ul>
+  <div class="note">인식영역은 비율로 저장되지만 PC마다 화면 구성이 다를 수 있습니다. 다른 PC에서 불러온 뒤에는 <span class="st">표기</span> · <span class="st">테스트</span>로 한 번 확인하세요. restart 이미지는 해상도마다 달라 다시 캡처해야 할 수 있습니다.</div>
 </div>
 
 <h3 id="s8-4">8-4. HP 임계값 + 키순서 (힐)</h3>
