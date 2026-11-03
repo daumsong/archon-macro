@@ -133,8 +133,11 @@ const DB_URL = "https://archon-remote-default-rtdb.asia-southeast1.firebasedatab
 // ================================================================
 
 let CODE = null, pollTimer = null, kaTimer = null;
+let wokeAt = 0;   // 앱을 깨운 시각 — 앱이 최신 상태를 올리기 전 잠깐은 '연결 중'으로 보인다
 
 const $ = s => document.querySelector(s);
+// 화면에 보일 때만 조회·신호 (다른 탭·최소화·폰 화면 꺼짐이면 쉰다 — 데이터 요금 절약)
+const isVisible = () => document.visibilityState === "visible";
 function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show");
   clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1600); }
 
@@ -143,11 +146,21 @@ function roomUrl(path){ return `${DB_URL}/rooms/${CODE}/${path}.json`; }
 async function sendCmd(cmd){
   if(!CODE) return;
   const id = Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+  const quiet = (cmd === "status");   // 연결 유지 신호는 알림 없이
   try{
     await fetch(roomUrl("cmd"), { method:"PUT",
       body: JSON.stringify({ id, cmd, ts: Date.now() }) });
-    toast("전송: " + cmd);
-  }catch(e){ toast("전송 실패 (네트워크)"); }
+    if(!quiet) toast("전송: " + cmd);
+  }catch(e){ if(!quiet) toast("전송 실패 (네트워크)"); }
+}
+
+// 앱에 '지금 보고 있음' 신호 → 앱이 곧바로 최신 상태를 올린다 → 잠시 뒤 다시 조회해 반영
+// (앱은 이 신호가 40초 넘게 없으면 상태 올리기를 멈춘다)
+function wake(){
+  wokeAt = Date.now();
+  sendCmd("status");
+  setTimeout(pollStatus, 900);
+  setTimeout(pollStatus, 1800);
 }
 
 async function pollStatus(){
@@ -170,8 +183,9 @@ let pending = {};  // 방금 누른 명령 → 잠시 그 버튼 비활성 (중�
 
 function renderStatus(s){
   const online = s && s.ts && (Date.now()-s.ts) < 15000; // 15초 내 갱신 = 온라인
-  $("#dot").className = "dot " + (online ? "on" : "off");
-  if(!s){ $("#stateText").textContent = "응답 없음"; $("#seenText").textContent="—"; setButtons(null,false); return; }
+  const waking = !online && (Date.now()-wokeAt) < 6000;  // 앱이 최신 상태를 올리기 전 잠깐
+  $("#dot").className = "dot " + (online ? "on" : (waking ? "" : "off"));
+  if(!s){ $("#stateText").textContent = waking ? "⏳ 연결 중…" : "응답 없음"; $("#seenText").textContent="—"; setButtons(null,false); return; }
   // 신형식(불리언) + 구형식(state 문자열) 둘 다 호환
   const hunt = !!s.hunt || s.state==='hunting';
   const pf   = !!s.pathfind || s.state==='pathfind';
@@ -189,7 +203,7 @@ function renderStatus(s){
   else if(hunt) label="🟢 자동사냥 작동중";
   else if(ats) label="🟢 ATS보조 작동중";
   else label="⚫ 대기";
-  $("#stateText").textContent = (online?"":"⚠ 오프라인 · ") + label;
+  $("#stateText").textContent = (online ? "" : (waking ? "⏳ 연결 중… · " : "⚠ 오프라인 · ")) + label;
   $("#seenText").textContent = "최근 갱신 " + fmtAge(s.ts);
   const hp = (s.hp ?? -1), mp = (s.mp ?? -1);
   $("#hpText").textContent = hp>=0 ? hp+"%" : "—";
@@ -237,10 +251,10 @@ function connect(code){
   $("#loginCard").classList.add("hidden");
   $("#panel").classList.remove("hidden");
   pollStatus();
-  clearInterval(pollTimer); pollTimer = setInterval(pollStatus, 2500);
-  sendCmd("status"); // 연결 즉시 상태 요청 (앱 빠른폴링 진입)
-  // keepalive — 연결 중엔 15초마다 신호 보내 앱이 빠른 폴링 유지 (F키 즉각 반응)
-  clearInterval(kaTimer); kaTimer = setInterval(()=>{ if(CODE) sendCmd("status"); }, 15000);
+  clearInterval(pollTimer); pollTimer = setInterval(()=>{ if(isVisible()) pollStatus(); }, 2500);
+  wake(); // 연결 즉시 앱에 신호 → 최신 상태 받기
+  // keepalive — 화면에 보이는 동안 15초마다 신호 (앱은 이 신호가 있을 때만 상태를 올림)
+  clearInterval(kaTimer); kaTimer = setInterval(()=>{ if(CODE && isVisible()) sendCmd("status"); }, 15000);
 }
 
 function logout(){
@@ -344,9 +358,9 @@ lb.addEventListener("click", lbClose);  // 배경 탭 = 닫기
 
 // 탭 복귀(화면 켜짐/앱 전환 복귀) 시 즉시 재폴링 — 모바일 백그라운드로 멈췄던 것 복구
 document.addEventListener("visibilitychange", ()=>{
-  if(document.visibilityState === "visible" && CODE){
+  if(isVisible() && CODE){
     pollStatus();
-    sendCmd("status");  // 앱 빠른폴링 재진입
+    wake();  // 쉬는 동안 앱이 상태 올리기를 멈췄을 수 있다 → 다시 깨운다
   }
 });
 window.addEventListener("focus", ()=>{ if(CODE){ pollStatus(); } });
